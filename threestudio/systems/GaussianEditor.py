@@ -25,6 +25,7 @@ from argparse import ArgumentParser
 from threestudio.utils.misc import get_device
 from threestudio.utils.perceptual import PerceptualLoss
 from threestudio.utils.sam import LangSAMTextSegmentor
+import copy
 
 
 class GaussianEditor(BaseLift3DSystem):
@@ -68,6 +69,7 @@ class GaussianEditor(BaseLift3DSystem):
     cfg: Config
 
     def configure(self) -> None:
+        # print("gaussian-editor-configure")
         self.gaussian = GaussianModel(
             sh_degree=0,
             anchor_weight_init_g0=self.cfg.anchor_weight_init_g0,
@@ -149,6 +151,29 @@ class GaussianEditor(BaseLift3DSystem):
 
         self.gaussian.set_mask(selected_mask)
         self.gaussian.apply_grad_mask(selected_mask)
+
+        # =================== DEBUG: save bg / fg ply ===================
+        debug_dir = "./debug"
+        os.makedirs(debug_dir, exist_ok=True)
+
+        fg_keep = selected_mask.bool()
+        bg_keep = ~fg_keep
+
+        gaussian_fg = copy.deepcopy(self.gaussian)
+        gaussian_bg = copy.deepcopy(self.gaussian)
+
+        gaussian_fg.prune_points(~fg_keep)  
+        gaussian_bg.prune_points(fg_keep)   
+
+        fg_path = os.path.join(debug_dir, "fg_gaussians.ply")
+        bg_path = os.path.join(debug_dir, "bg_gaussians.ply")
+
+        gaussian_fg.save_ply(fg_path)
+        gaussian_bg.save_ply(bg_path)
+
+        print(f"[DEBUG] Saved fg to {fg_path}, bg to {bg_path}, exiting after update_mask.")
+        # sys.exit(0)
+        # =================== DEBUG END ===================
 
         return selected_mask
 

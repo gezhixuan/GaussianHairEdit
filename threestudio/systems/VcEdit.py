@@ -32,6 +32,7 @@ class VcEdit(GaussianEditor):
     cfg: Config
 
     def configure(self) -> None:
+        # print("vcedit-configure")
         super().configure()
         if len(self.cfg.cache_dir) > 0:
             self.cache_dir = os.path.join("edit_cache", self.cfg.cache_dir)
@@ -40,7 +41,7 @@ class VcEdit(GaussianEditor):
 
         self.bg_gaussian = None
 
-    def on_fit_start(self) -> None:
+    def on_fit_start(self) -> None: 
         super().on_fit_start()
         self.origin_frames = self.render_all_view(cache_name="origin_render")
 
@@ -96,6 +97,31 @@ class VcEdit(GaussianEditor):
                 for idx, view_idx in enumerate(self.view_list):
                     self.edit_frames[view_idx] = result["edit_images"][idx][None]
 
+                # ----- DEBUG: save pre/post guidance comparison for all views -----
+                step_dir = os.path.join(debug_root, str(self.global_step))
+                os.makedirs(step_dir, exist_ok=True)
+
+                for idx, view_idx in enumerate(self.view_list):
+                    before = curr_frames[view_idx][0].detach().cpu().numpy()  # H W 3
+                    after = result["edit_images"][idx].detach().cpu().numpy()  # H W 3
+
+                    comp = np.concatenate([before, after], axis=1)
+                    comp = (comp.clip(0.0, 1.0) * 255.0).astype(np.uint8)
+                    comp = cv2.cvtColor(comp, cv2.COLOR_RGB2BGR)
+
+                    if isinstance(view_idx, int):
+                        view_id = view_idx
+                    else:
+                        view_id = int(view_idx)
+
+                    cv2.imwrite(
+                        os.path.join(
+                            step_dir, f"guidance_view_{view_id:04d}.png"
+                        ),
+                        comp,
+                    )
+                # ----- DEBUG end -----
+
                 concat_edit_frames = result["edit_images"].permute(1, 0, 2, 3).flatten(1, 2).cpu().numpy()
                 concat_edit_frames = (concat_edit_frames.clip(0.0, 1.0) * 255.0).astype(np.uint8)
                 concat_edit_frames = cv2.cvtColor(concat_edit_frames, cv2.COLOR_RGB2BGR)
@@ -107,6 +133,29 @@ class VcEdit(GaussianEditor):
             for img_index, cur_index in enumerate(batch_index):
                 gt_images.append(self.edit_frames[cur_index])
             gt_images = torch.concatenate(gt_images, dim=0)
+            
+
+            # ----- DEBUG: on non-guidance steps, save render vs gt comparison -----
+            if self.global_step % self.cfg.per_editing_step != 0:
+                images_np = images.detach().cpu().numpy()
+                gt_np = gt_images.detach().cpu().numpy()
+
+                for b, cur_index in enumerate(batch_index):
+                    if isinstance(cur_index, int):
+                        view_id = cur_index
+                    else:
+                        view_id = int(cur_index)
+
+                    pred = images_np[b]   # H W 3, render
+                    target = gt_np[b]     # H W 3, gt from edit_frames
+
+                    comp = np.concatenate([pred, target], axis=1)
+                    comp = (comp.clip(0.0, 1.0) * 255.0).astype(np.uint8)
+                    comp = cv2.cvtColor(comp, cv2.COLOR_RGB2BGR)
+
+                    filename = f"train_step_{self.global_step:06d}_view_{view_id:04d}.png"
+                    cv2.imwrite(os.path.join(debug_root, filename), comp)
+            # ----- DEBUG end -----
 
             guidance_out = {
                 "loss_l1": torch.nn.functional.l1_loss(images, gt_images),

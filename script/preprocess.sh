@@ -1,7 +1,7 @@
 # ID="Zhixuan"
-# ID="Zhixuan_3"
+ID="Zhixuan_3"
 # ID="Liza"
-ID="Liza_3"
+# ID="Liza_3"
 
 export PROJECT_DIR="/scratch/hl106/zx_workspace/cto/VcEdit"
 export DATA_PATH="$PROJECT_DIR/gs_data/$ID"
@@ -25,7 +25,7 @@ eval "$(conda shell.bash hook)"
 conda deactivate && conda activate vcedit
 cd $PROJECT_DIR/src/preprocessing
 CUDA_VISIBLE_DEVICES="$GPU" python preprocess_raw_images.py \
-    --data_path $DATA_PATH --target_fps 3
+    --data_path $DATA_PATH --target_fps 4
 
 conda deactivate && conda activate vcedit
 cd $PROJECT_DIR/src

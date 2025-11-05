@@ -93,7 +93,8 @@ class GaussianEditor(BaseLift3DSystem):
             self.cache_dir, self.cfg.seg_prompt + f"_{save_name}_{self.view_num}_view"
         )
         gs_mask_path = os.path.join(mask_cache_dir, "gs_mask.pt")
-        if not os.path.exists(gs_mask_path) or self.cfg.cache_overwrite:
+        # if not os.path.exists(gs_mask_path) or self.cfg.cache_overwrite:
+        if True:
             if os.path.exists(mask_cache_dir):
                 shutil.rmtree(mask_cache_dir)
             os.makedirs(mask_cache_dir)

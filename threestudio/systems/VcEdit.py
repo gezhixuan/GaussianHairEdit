@@ -12,6 +12,8 @@ from threestudio.systems.GaussianEditor import GaussianEditor
 import cv2
 import numpy as np
 
+debug_root = "./debug"
+
 
 @threestudio.register("gsedit-system-edit")
 class VcEdit(GaussianEditor):

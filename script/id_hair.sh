@@ -1,6 +1,4 @@
-export CUDA_VISIBLE_DEVICES=3
-
-rm -rf ./debug/*
+ID="Zhixuan"
 
 python launch.py --config configs/edit-inf.yaml \
 --train \
@@ -17,8 +15,8 @@ system.loss.lambda_anchor_opacity=50 \
 system.densify_from_iter=100 \
 system.densify_until_iter=1501 \
 system.densification_interval=100 \
-data.source=gs_data/face \
-system.gs_source=gs_data/trained_gs_models/face/point_cloud.ply \
+data.source=gs_data/$ID \
+system.gs_source=gs_data/Zhixuan/3d_gaussian_splatting/point_cloud/iteration_30000/point_cloud.ply \
 system.guidance.src_prompt="hair" \
 system.guidance.tgt_prompt="buzz cut" \
 system.prompt_processor.prompt="buzz cut" \
@@ -26,8 +24,7 @@ system.guidance.self_attn_th=0.8 \
 system.guidance.cross_attn_th=0.6 \
 system.guidance.src_blend_th=0.4 \
 system.guidance.tgt_blend_th=0.4 \
-trainer.max_steps=2000 \
+trainer.max_steps=800 \
 system.per_editing_step=400
 
 #system.gs_source=gs_data/trained_gs_models/face/point_cloud.ply \
-# trainer.max_steps=800 \

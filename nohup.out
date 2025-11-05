@@ -37,20 +37,20 @@ FutureWarning: You are using `torch.load` with `weights_only=False` (the current
 58.865    Total estimated model params size (MB)
 1         Modules in train mode
 58        Modules in eval mode[0m
-[32m[INFO] Validation results will be saved to outputs/edit-inf/buzz_cut@20251105-150329/save[0m
+[32m[INFO] Validation results will be saved to outputs/edit-inf/buzz_cut@20251105-162113/save[0m
 
 loaded pretrained LPIPS loss from threestudio/utils/lpips/vgg.pth
 final text_encoder_type: bert-base-uncased
 Model loaded from /home/hl106/.cache/huggingface/hub/models--ShilongLiu--GroundingDINO/snapshots/a94c9b567a2a374598f05c584e96798a170c56fb/groundingdino_swinb_cogcoor.pth 
  => _IncompatibleKeys(missing_keys=[], unexpected_keys=['label_enc.weight', 'bert.embeddings.position_ids'])
-  0%|          | 0/96 [00:00<?, ?it/s]  1%|          | 1/96 [00:00<00:54,  1.74it/s]  4%|▍         | 4/96 [00:00<00:12,  7.34it/s]  7%|▋         | 7/96 [00:00<00:08, 10.88it/s]  9%|▉         | 9/96 [00:00<00:07, 11.77it/s] 11%|█▏        | 11/96 [00:01<00:06, 12.87it/s] 14%|█▎        | 13/96 [00:01<00:06, 12.57it/s] 16%|█▌        | 15/96 [00:01<00:05, 13.68it/s] 18%|█▊        | 17/96 [00:01<00:05, 14.55it/s] 20%|█▉        | 19/96 [00:01<00:05, 15.10it/s] 22%|██▏       | 21/96 [00:01<00:04, 16.10it/s] 24%|██▍       | 23/96 [00:01<00:04, 16.03it/s] 26%|██▌       | 25/96 [00:02<00:05, 14.17it/s] 28%|██▊       | 27/96 [00:02<00:04, 14.74it/s] 30%|███       | 29/96 [00:02<00:04, 15.02it/s] 32%|███▏      | 31/96 [00:02<00:04, 15.31it/s] 34%|███▍      | 33/96 [00:02<00:04, 15.61it/s] 36%|███▋      | 35/96 [00:02<00:03, 15.72it/s] 39%|███▊      | 37/96 [00:02<00:03, 16.05it/s] 41%|████      | 39/96 [00:02<00:03, 15.47it/s] 43%|████▎     | 41/96 [00:03<00:03, 14.94it/s] 45%|████▍     | 43/96 [00:03<00:03, 14.71it/s] 47%|████▋     | 45/96 [00:03<00:03, 14.14it/s] 49%|████▉     | 47/96 [00:03<00:03, 14.03it/s] 52%|█████▏    | 50/96 [00:03<00:02, 16.98it/s] 54%|█████▍    | 52/96 [00:03<00:02, 17.25it/s] 57%|█████▋    | 55/96 [00:03<00:02, 18.58it/s] 59%|█████▉    | 57/96 [00:03<00:02, 18.30it/s] 61%|██████▏   | 59/96 [00:04<00:02, 17.16it/s] 64%|██████▎   | 61/96 [00:04<00:02, 16.47it/s] 67%|██████▋   | 64/96 [00:04<00:01, 18.34it/s] 70%|██████▉   | 67/96 [00:04<00:01, 20.92it/s] 73%|███████▎  | 70/96 [00:04<00:01, 23.16it/s] 76%|███████▌  | 73/96 [00:04<00:01, 22.05it/s] 79%|███████▉  | 76/96 [00:04<00:00, 23.72it/s] 82%|████████▏ | 79/96 [00:04<00:00, 24.74it/s] 85%|████████▌ | 82/96 [00:05<00:00, 22.95it/s] 89%|████████▊ | 85/96 [00:05<00:00, 22.31it/s] 92%|█████████▏| 88/96 [00:05<00:00, 21.93it/s] 95%|█████████▍| 91/96 [00:05<00:00, 22.95it/s] 98%|█████████▊| 94/96 [00:05<00:00, 23.64it/s]100%|██████████| 96/96 [00:05<00:00, 16.78it/s]
+  0%|          | 0/65 [00:00<?, ?it/s]  6%|▌         | 4/65 [00:00<00:01, 37.90it/s] 12%|█▏        | 8/65 [00:00<00:01, 35.68it/s] 18%|█▊        | 12/65 [00:00<00:01, 36.05it/s] 26%|██▌       | 17/65 [00:00<00:01, 40.01it/s] 34%|███▍      | 22/65 [00:00<00:01, 33.95it/s] 40%|████      | 26/65 [00:00<00:01, 29.53it/s] 46%|████▌     | 30/65 [00:01<00:01, 22.83it/s] 51%|█████     | 33/65 [00:01<00:01, 23.18it/s] 55%|█████▌    | 36/65 [00:01<00:01, 23.42it/s] 60%|██████    | 39/65 [00:01<00:01, 22.70it/s] 65%|██████▍   | 42/65 [00:01<00:00, 23.01it/s] 71%|███████   | 46/65 [00:01<00:00, 26.56it/s] 78%|███████▊  | 51/65 [00:01<00:00, 30.57it/s] 89%|████████▉ | 58/65 [00:01<00:00, 39.25it/s] 97%|█████████▋| 63/65 [00:02<00:00, 41.69it/s]100%|██████████| 65/65 [00:02<00:00, 31.40it/s]
 [32m[INFO] Segmentation with prompt: hair[0m
 Segment with prompt: hair
-  0%|          | 0/96 [00:00<?, ?it/s]FutureWarning: The `device` argument is deprecated and will be removed in v5 of Transformers.
+  0%|          | 0/65 [00:00<?, ?it/s]FutureWarning: The `device` argument is deprecated and will be removed in v5 of Transformers.
 UserWarning: torch.utils.checkpoint: the use_reentrant parameter should be passed explicitly. In version 2.4 we will raise an exception if use_reentrant is not passed. use_reentrant=False is recommended, but if you need to preserve the current default behavior, you can pass use_reentrant=True. Refer to docs for more details on the differences between the two variants.
 UserWarning: None of the inputs have requires_grad=True. Gradients will be None
 FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
-  1%|          | 1/96 [00:01<02:09,  1.36s/it]  2%|▏         | 2/96 [00:02<01:33,  1.00it/s]  3%|▎         | 3/96 [00:02<01:17,  1.20it/s]  4%|▍         | 4/96 [00:03<01:10,  1.30it/s]  5%|▌         | 5/96 [00:04<01:05,  1.39it/s]  6%|▋         | 6/96 [00:04<01:02,  1.44it/s]  7%|▋         | 7/96 [00:05<01:06,  1.35it/s]  8%|▊         | 8/96 [00:06<01:02,  1.42it/s]  9%|▉         | 9/96 [00:06<01:01,  1.41it/s] 10%|█         | 10/96 [00:07<00:59,  1.44it/s] 11%|█▏        | 11/96 [00:08<00:56,  1.50it/s] 12%|█▎        | 12/96 [00:08<00:56,  1.48it/s] 14%|█▎        | 13/96 [00:09<00:55,  1.50it/s] 15%|█▍        | 14/96 [00:10<00:53,  1.52it/s] 16%|█▌        | 15/96 [00:10<00:52,  1.55it/s] 17%|█▋        | 16/96 [00:11<00:51,  1.57it/s] 18%|█▊        | 17/96 [00:12<00:51,  1.53it/s] 19%|█▉        | 18/96 [00:12<00:50,  1.54it/s] 20%|█▉        | 19/96 [00:13<00:53,  1.43it/s] 21%|██        | 20/96 [00:14<00:51,  1.47it/s] 22%|██▏       | 21/96 [00:14<00:53,  1.41it/s] 23%|██▎       | 22/96 [00:15<00:55,  1.33it/s] 24%|██▍       | 23/96 [00:16<00:52,  1.38it/s] 25%|██▌       | 24/96 [00:17<00:50,  1.43it/s] 26%|██▌       | 25/96 [00:17<00:48,  1.46it/s] 27%|██▋       | 26/96 [00:18<00:46,  1.50it/s] 28%|██▊       | 27/96 [00:18<00:44,  1.54it/s] 29%|██▉       | 28/96 [00:19<00:44,  1.53it/s] 30%|███       | 29/96 [00:20<00:43,  1.53it/s] 31%|███▏      | 30/96 [00:20<00:42,  1.54it/s] 32%|███▏      | 31/96 [00:21<00:42,  1.53it/s] 33%|███▎      | 32/96 [00:22<00:41,  1.55it/s] 34%|███▍      | 33/96 [00:22<00:40,  1.54it/s] 35%|███▌      | 34/96 [00:23<00:40,  1.55it/s] 36%|███▋      | 35/96 [00:24<00:39,  1.53it/s] 38%|███▊      | 36/96 [00:24<00:40,  1.47it/s] 39%|███▊      | 37/96 [00:25<00:38,  1.52it/s] 40%|███▉      | 38/96 [00:26<00:37,  1.53it/s] 41%|████      | 39/96 [00:26<00:38,  1.50it/s] 42%|████▏     | 40/96 [00:27<00:36,  1.53it/s] 43%|████▎     | 41/96 [00:28<00:35,  1.55it/s] 44%|████▍     | 42/96 [00:28<00:34,  1.56it/s] 45%|████▍     | 43/96 [00:29<00:33,  1.58it/s] 46%|████▌     | 44/96 [00:29<00:32,  1.59it/s] 47%|████▋     | 45/96 [00:30<00:31,  1.61it/s] 48%|████▊     | 46/96 [00:31<00:31,  1.60it/s] 49%|████▉     | 47/96 [00:31<00:31,  1.57it/s] 50%|█████     | 48/96 [00:32<00:32,  1.47it/s] 51%|█████     | 49/96 [00:33<00:31,  1.48it/s] 52%|█████▏    | 50/96 [00:34<00:31,  1.46it/s] 53%|█████▎    | 51/96 [00:34<00:29,  1.51it/s] 54%|█████▍    | 52/96 [00:35<00:29,  1.51it/s] 55%|█████▌    | 53/96 [00:36<00:29,  1.45it/s] 56%|█████▋    | 54/96 [00:36<00:28,  1.48it/s] 57%|█████▋    | 55/96 [00:37<00:27,  1.48it/s] 58%|█████▊    | 56/96 [00:38<00:27,  1.48it/s] 59%|█████▉    | 57/96 [00:38<00:27,  1.42it/s] 60%|██████    | 58/96 [00:39<00:26,  1.46it/s] 61%|██████▏   | 59/96 [00:40<00:25,  1.44it/s] 62%|██████▎   | 60/96 [00:40<00:25,  1.42it/s] 64%|██████▎   | 61/96 [00:41<00:24,  1.45it/s] 65%|██████▍   | 62/96 [00:42<00:23,  1.47it/s] 66%|██████▌   | 63/96 [00:42<00:22,  1.50it/s] 67%|██████▋   | 64/96 [00:43<00:21,  1.48it/s] 68%|██████▊   | 65/96 [00:44<00:21,  1.46it/s] 69%|██████▉   | 66/96 [00:44<00:20,  1.49it/s] 70%|██████▉   | 67/96 [00:45<00:19,  1.49it/s] 71%|███████   | 68/96 [00:46<00:18,  1.52it/s] 72%|███████▏  | 69/96 [00:46<00:17,  1.50it/s] 73%|███████▎  | 70/96 [00:47<00:16,  1.53it/s] 74%|███████▍  | 71/96 [00:48<00:16,  1.50it/s] 75%|███████▌  | 72/96 [00:48<00:15,  1.51it/s] 76%|███████▌  | 73/96 [00:49<00:14,  1.54it/s] 77%|███████▋  | 74/96 [00:50<00:14,  1.51it/s] 78%|███████▊  | 75/96 [00:50<00:13,  1.53it/s] 79%|███████▉  | 76/96 [00:51<00:13,  1.50it/s] 80%|████████  | 77/96 [00:52<00:12,  1.53it/s] 81%|████████▏ | 78/96 [00:52<00:11,  1.52it/s] 82%|████████▏ | 79/96 [00:53<00:11,  1.47it/s] 83%|████████▎ | 80/96 [00:54<00:10,  1.48it/s] 84%|████████▍ | 81/96 [00:54<00:10,  1.39it/s] 85%|████████▌ | 82/96 [00:55<00:09,  1.41it/s] 86%|████████▋ | 83/96 [00:56<00:09,  1.43it/s] 88%|████████▊ | 84/96 [00:57<00:08,  1.41it/s] 89%|████████▊ | 85/96 [00:57<00:07,  1.45it/s] 90%|████████▉ | 86/96 [00:58<00:06,  1.47it/s] 91%|█████████ | 87/96 [00:59<00:06,  1.50it/s] 92%|█████████▏| 88/96 [00:59<00:05,  1.44it/s] 93%|█████████▎| 89/96 [01:00<00:05,  1.39it/s] 94%|█████████▍| 90/96 [01:01<00:04,  1.40it/s] 95%|█████████▍| 91/96 [01:01<00:03,  1.41it/s] 96%|█████████▌| 92/96 [01:02<00:02,  1.45it/s] 97%|█████████▋| 93/96 [01:03<00:02,  1.47it/s] 98%|█████████▊| 94/96 [01:03<00:01,  1.51it/s] 99%|█████████▉| 95/96 [01:04<00:00,  1.53it/s]100%|██████████| 96/96 [01:05<00:00,  1.52it/s]100%|██████████| 96/96 [01:05<00:00,  1.47it/s]
+  2%|▏         | 1/65 [00:01<01:29,  1.39s/it]  3%|▎         | 2/65 [00:02<01:00,  1.05it/s]  5%|▍         | 3/65 [00:02<00:52,  1.18it/s]  6%|▌         | 4/65 [00:03<00:46,  1.31it/s]  8%|▊         | 5/65 [00:04<00:43,  1.37it/s]  9%|▉         | 6/65 [00:04<00:40,  1.44it/s] 11%|█         | 7/65 [00:05<00:39,  1.48it/s] 12%|█▏        | 8/65 [00:05<00:38,  1.48it/s] 14%|█▍        | 9/65 [00:06<00:37,  1.50it/s] 15%|█▌        | 10/65 [00:07<00:36,  1.51it/s] 17%|█▋        | 11/65 [00:07<00:35,  1.53it/s] 18%|█▊        | 12/65 [00:08<00:35,  1.49it/s] 20%|██        | 13/65 [00:09<00:34,  1.51it/s] 22%|██▏       | 14/65 [00:09<00:33,  1.52it/s] 23%|██▎       | 15/65 [00:10<00:32,  1.52it/s] 25%|██▍       | 16/65 [00:11<00:31,  1.55it/s] 26%|██▌       | 17/65 [00:11<00:31,  1.52it/s] 28%|██▊       | 18/65 [00:12<00:31,  1.47it/s] 29%|██▉       | 19/65 [00:13<00:31,  1.46it/s] 31%|███       | 20/65 [00:14<00:31,  1.45it/s] 32%|███▏      | 21/65 [00:14<00:29,  1.49it/s] 34%|███▍      | 22/65 [00:15<00:31,  1.36it/s] 35%|███▌      | 23/65 [00:16<00:29,  1.43it/s] 37%|███▋      | 24/65 [00:16<00:28,  1.46it/s] 38%|███▊      | 25/65 [00:17<00:27,  1.46it/s] 40%|████      | 26/65 [00:18<00:26,  1.47it/s] 42%|████▏     | 27/65 [00:18<00:26,  1.43it/s] 43%|████▎     | 28/65 [00:19<00:25,  1.48it/s] 45%|████▍     | 29/65 [00:20<00:24,  1.49it/s] 46%|████▌     | 30/65 [00:20<00:23,  1.48it/s] 48%|████▊     | 31/65 [00:21<00:22,  1.50it/s] 49%|████▉     | 32/65 [00:22<00:22,  1.48it/s] 51%|█████     | 33/65 [00:22<00:21,  1.50it/s] 52%|█████▏    | 34/65 [00:23<00:21,  1.47it/s] 54%|█████▍    | 35/65 [00:24<00:20,  1.47it/s] 55%|█████▌    | 36/65 [00:24<00:19,  1.50it/s] 57%|█████▋    | 37/65 [00:25<00:19,  1.46it/s] 58%|█████▊    | 38/65 [00:26<00:18,  1.49it/s] 60%|██████    | 39/65 [00:26<00:17,  1.50it/s] 62%|██████▏   | 40/65 [00:27<00:16,  1.51it/s] 63%|██████▎   | 41/65 [00:28<00:16,  1.45it/s] 65%|██████▍   | 42/65 [00:28<00:15,  1.45it/s] 66%|██████▌   | 43/65 [00:29<00:14,  1.50it/s] 68%|██████▊   | 44/65 [00:30<00:14,  1.40it/s] 69%|██████▉   | 45/65 [00:31<00:13,  1.46it/s] 71%|███████   | 46/65 [00:31<00:12,  1.50it/s] 72%|███████▏  | 47/65 [00:32<00:12,  1.49it/s] 74%|███████▍  | 48/65 [00:32<00:11,  1.52it/s] 75%|███████▌  | 49/65 [00:33<00:10,  1.51it/s] 77%|███████▋  | 50/65 [00:34<00:09,  1.53it/s] 78%|███████▊  | 51/65 [00:34<00:09,  1.52it/s] 80%|████████  | 52/65 [00:35<00:08,  1.51it/s] 82%|████████▏ | 53/65 [00:36<00:07,  1.50it/s] 83%|████████▎ | 54/65 [00:37<00:07,  1.42it/s] 85%|████████▍ | 55/65 [00:37<00:06,  1.48it/s] 86%|████████▌ | 56/65 [00:38<00:06,  1.43it/s] 88%|████████▊ | 57/65 [00:39<00:05,  1.44it/s] 89%|████████▉ | 58/65 [00:39<00:04,  1.47it/s] 91%|█████████ | 59/65 [00:40<00:04,  1.46it/s] 92%|█████████▏| 60/65 [00:41<00:03,  1.50it/s] 94%|█████████▍| 61/65 [00:41<00:02,  1.48it/s] 95%|█████████▌| 62/65 [00:42<00:01,  1.51it/s] 97%|█████████▋| 63/65 [00:43<00:01,  1.50it/s] 98%|█████████▊| 64/65 [00:43<00:00,  1.40it/s]100%|██████████| 65/65 [00:44<00:00,  1.44it/s]100%|██████████| 65/65 [00:44<00:00,  1.46it/s]
 [32m[INFO] Using prompt [buzz cut] and negative prompt [][0m
 [32m[INFO] Using view-dependent prompts [side]:[buzz cut, side view] [front]:[buzz cut, front view] [back]:[buzz cut, back view] [overhead]:[buzz cut, overhead view][0m
 FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
@@ -58,221 +58,18 @@ FutureWarning: You are using `torch.load` with `weights_only=False` (the current
 FutureWarning: It is deprecated to pass a pretrained model name or path to `from_config`.If you were trying to load a scheduler, please use <class 'diffusers.schedulers.scheduling_lcm.LCMScheduler'>.from_pretrained(...) instead. Otherwise, please make sure to pass a configuration dictionary instead. This functionality will be removed in v1.0.0.
 FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
 [DEBUG] Saved fg to ./debug/fg_gaussians.ply, bg to ./debug/bg_gaussians.ply, exiting after update_mask.
-Loading pipeline components...:   0%|          | 0/7 [00:00<?, ?it/s]Loading pipeline components...:  29%|██▊       | 2/7 [00:00<00:00, 13.62it/s]Loading pipeline components...:  57%|█████▋    | 4/7 [00:01<00:01,  2.35it/s]Loading pipeline components...:  86%|████████▌ | 6/7 [00:02<00:00,  2.87it/s]Loading pipeline components...: 100%|██████████| 7/7 [00:02<00:00,  2.28it/s]Loading pipeline components...: 100%|██████████| 7/7 [00:02<00:00,  2.57it/s]
+Loading pipeline components...:   0%|          | 0/7 [00:00<?, ?it/s]Loading pipeline components...:  14%|█▍        | 1/7 [00:01<00:09,  1.51s/it]Loading pipeline components...:  29%|██▊       | 2/7 [00:02<00:04,  1.08it/s]Loading pipeline components...:  57%|█████▋    | 4/7 [00:02<00:01,  1.74it/s]Loading pipeline components...: 100%|██████████| 7/7 [00:02<00:00,  3.76it/s]Loading pipeline components...: 100%|██████████| 7/7 [00:02<00:00,  2.44it/s]
 [32m[INFO] Loaded InfEdit![0m
 PossibleUserWarning: The 'train_dataloader' does not have many workers which may be a bottleneck. Consider increasing the value of the `num_workers` argument` to `num_workers=63` in the `DataLoader` to improve performance.
 PossibleUserWarning: The 'val_dataloader' does not have many workers which may be a bottleneck. Consider increasing the value of the `num_workers` argument` to `num_workers=63` in the `DataLoader` to improve performance.
 Training: |          | 0/? [00:00<?, ?it/s]Training: |          | 0/? [00:00<?, ?it/s]Epoch 0: |          | 0/? [00:00<?, ?it/s] Update guidance at global step:  0
 
-  0%|          | 0/96 [00:00<?, ?it/s][A
- 22%|██▏       | 21/96 [00:00<00:00, 206.24it/s][A
- 56%|█████▋    | 54/96 [00:00<00:00, 277.75it/s][A
- 92%|█████████▏| 88/96 [00:00<00:00, 302.91it/s][A100%|██████████| 96/96 [00:00<00:00, 293.74it/s]
+  0%|          | 0/65 [00:00<?, ?it/s][A
+ 32%|███▏      | 21/65 [00:00<00:00, 209.74it/s][A
+ 80%|████████  | 52/65 [00:00<00:00, 268.20it/s][A100%|██████████| 65/65 [00:00<00:00, 266.85it/s]
 loaded pretrained LPIPS loss from threestudio/utils/lpips/vgg.pth
 
   0%|          | 0/15 [00:00<?, ?it/s][A
-  7%|▋         | 1/15 [00:14<03:24, 14.61s/it][A
- 13%|█▎        | 2/15 [00:28<03:06, 14.38s/it][A
- 20%|██        | 3/15 [00:43<02:51, 14.32s/it][A
- 27%|██▋       | 4/15 [00:57<02:38, 14.39s/it][A
- 33%|███▎      | 5/15 [01:57<05:08, 30.82s/it][A
- 40%|████      | 6/15 [02:12<03:49, 25.48s/it][ABlend Cross-Attention Consistency Control at t = 999 ...
---step 1: inverse project maps to 3d ...
---step 2: render back to maps ...
-Update Latents & Callback at t = 999 ...
-Finished t = 999.
-Blend Cross-Attention Consistency Control at t = 939 ...
---step 1: inverse project maps to 3d ...
---step 2: render back to maps ...
-Update Latents & Callback at t = 939 ...
-Finished t = 939.
-Blend Cross-Attention Consistency Control at t = 879 ...
---step 1: inverse project maps to 3d ...
---step 2: render back to maps ...
-Update Latents & Callback at t = 879 ...
-Finished t = 879.
-Blend Cross-Attention Consistency Control at t = 819 ...
---step 1: inverse project maps to 3d ...
---step 2: render back to maps ...
-Update Latents & Callback at t = 819 ...
-Finished t = 819.
-Prediction Consistency Control at t = 759 ...
---step 1: inverse project images to 3d ...
---step 2: render back to images ...
-Blend Cross-Attention Consistency Control at t = 759 ...
---step 1: inverse project maps to 3d ...
---step 2: render back to maps ...
-Update Latents & Callback at t = 759 ...
-Finished t = 759.
-Blend Cross-Attention Consistency Control at t = 699 ...
---step 1: inverse project maps to 3d ...
---step 2: render back to maps ...
-Update Latents & Callback at t = 699 ...
-Finished t = 699.
-Cross-Attention Consistency Control at t = 639 ...
-
-
-  0%|          | 0/4 [00:00<?, ?it/s][A[A
-
- 25%|██▌       | 1/4 [00:44<02:14, 44.87s/it][A[A
-
- 50%|█████     | 2/4 [01:28<01:28, 44.03s/it][A[A
-
- 75%|███████▌  | 3/4 [02:13<00:44, 44.70s/it][A[A
-
-100%|██████████| 4/4 [02:59<00:00, 44.97s/it][A[A100%|██████████| 4/4 [02:59<00:00, 44.80s/it]
-
-
-  0%|          | 0/1 [00:00<?, ?it/s][A[A
-
-100%|██████████| 1/1 [00:42<00:00, 42.48s/it][A[A100%|██████████| 1/1 [00:42<00:00, 42.48s/it]
-
-
-  0%|          | 0/6 [00:00<?, ?it/s][A[A
-
- 17%|█▋        | 1/6 [00:39<03:15, 39.01s/it][A[A
-
- 33%|███▎      | 2/6 [01:18<02:36, 39.06s/it][A[A
-
- 50%|█████     | 3/6 [01:57<01:57, 39.11s/it][A[A
-
- 67%|██████▋   | 4/6 [02:36<01:18, 39.14s/it][A[A
-
- 83%|████████▎ | 5/6 [03:15<00:39, 39.15s/it][A[A
-
-100%|██████████| 6/6 [03:54<00:00, 39.13s/it][A[A100%|██████████| 6/6 [03:54<00:00, 39.12s/it]
-
- 47%|████▋     | 7/15 [10:16<23:23, 175.41s/it][A
- 53%|█████▎    | 8/15 [10:31<14:28, 124.11s/it][A
- 60%|██████    | 9/15 [10:45<08:58, 89.78s/it] [A
- 67%|██████▋   | 10/15 [11:42<06:38, 79.63s/it][A
- 73%|███████▎  | 11/15 [11:56<03:58, 59.66s/it][A
- 80%|████████  | 12/15 [12:11<02:17, 45.94s/it][A
- 87%|████████▋ | 13/15 [12:25<01:12, 36.42s/it][ABlend Cross-Attention Consistency Control at t = 639 ...
---step 1: inverse project maps to 3d ...
---step 2: render back to maps ...
-Update Latents & Callback at t = 639 ...
-Finished t = 639.
-Blend Cross-Attention Consistency Control at t = 579 ...
---step 1: inverse project maps to 3d ...
---step 2: render back to maps ...
-Update Latents & Callback at t = 579 ...
-Finished t = 579.
-Blend Cross-Attention Consistency Control at t = 519 ...
---step 1: inverse project maps to 3d ...
---step 2: render back to maps ...
-Update Latents & Callback at t = 519 ...
-Finished t = 519.
-Prediction Consistency Control at t = 459 ...
---step 1: inverse project images to 3d ...
---step 2: render back to images ...
-Blend Cross-Attention Consistency Control at t = 459 ...
---step 1: inverse project maps to 3d ...
---step 2: render back to maps ...
-Update Latents & Callback at t = 459 ...
-Finished t = 459.
-Blend Cross-Attention Consistency Control at t = 399 ...
---step 1: inverse project maps to 3d ...
---step 2: render back to maps ...
-Update Latents & Callback at t = 399 ...
-Finished t = 399.
-Blend Cross-Attention Consistency Control at t = 339 ...
---step 1: inverse project maps to 3d ...
---step 2: render back to maps ...
-Update Latents & Callback at t = 339 ...
-Finished t = 339.
-Blend Cross-Attention Consistency Control at t = 279 ...
---step 1: inverse project maps to 3d ...
---step 2: render back to maps ...
-Update Latents & Callback at t = 279 ...
-Finished t = 279.
-Cross-Attention Consistency Control at t = 219 ...
-
-
-  0%|          | 0/4 [00:00<?, ?it/s][A[A
-
- 25%|██▌       | 1/4 [00:39<01:57, 39.18s/it][A[A
-
- 50%|█████     | 2/4 [01:18<01:18, 39.12s/it][A[A
-
- 75%|███████▌  | 3/4 [01:57<00:39, 39.06s/it][A[A
-
-100%|██████████| 4/4 [02:36<00:00, 39.11s/it][A[A100%|██████████| 4/4 [02:36<00:00, 39.11s/it]
-
-
-  0%|          | 0/1 [00:00<?, ?it/s][A[A
-
-100%|██████████| 1/1 [00:39<00:00, 39.03s/it][A[A100%|██████████| 1/1 [00:39<00:00, 39.04s/it]
-
-
-  0%|          | 0/6 [00:00<?, ?it/s][A[A
-
- 17%|█▋        | 1/6 [00:39<03:15, 39.07s/it][A[A
-
- 33%|███▎      | 2/6 [01:18<02:37, 39.31s/it][A[A
-
- 50%|█████     | 3/6 [01:57<01:58, 39.36s/it][A[A
-
- 67%|██████▋   | 4/6 [02:36<01:18, 39.16s/it][A[A
-
- 83%|████████▎ | 5/6 [03:15<00:39, 39.08s/it][A[A 83%|████████▎ | 5/6 [03:55<00:47, 47.05s/it]
- 87%|████████▋ | 13/15 [19:49<03:02, 91.49s/it]
-Traceback (most recent call last):
-  File "launch.py", line 250, in <module>
-    main(args, extras)
-  File "launch.py", line 193, in main
-    trainer.fit(system, datamodule=dm, ckpt_path=cfg.resume)
-  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/pytorch_lightning/trainer/trainer.py", line 538, in fit
-    call._call_and_handle_interrupt(
-  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/pytorch_lightning/trainer/call.py", line 47, in _call_and_handle_interrupt
-    return trainer_fn(*args, **kwargs)
-  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/pytorch_lightning/trainer/trainer.py", line 574, in _fit_impl
-    self._run(model, ckpt_path=ckpt_path)
-  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/pytorch_lightning/trainer/trainer.py", line 981, in _run
-    results = self._run_stage()
-  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/pytorch_lightning/trainer/trainer.py", line 1025, in _run_stage
-    self.fit_loop.run()
-  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/pytorch_lightning/loops/fit_loop.py", line 205, in run
-    self.advance()
-  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/pytorch_lightning/loops/fit_loop.py", line 363, in advance
-    self.epoch_loop.run(self._data_fetcher)
-  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/pytorch_lightning/loops/training_epoch_loop.py", line 140, in run
-    self.advance(data_fetcher)
-  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/pytorch_lightning/loops/training_epoch_loop.py", line 250, in advance
-    batch_output = self.automatic_optimization.run(trainer.optimizers[0], batch_idx, kwargs)
-  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/pytorch_lightning/loops/optimization/automatic.py", line 190, in run
-    self._optimizer_step(batch_idx, closure)
-  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/pytorch_lightning/loops/optimization/automatic.py", line 268, in _optimizer_step
-    call._call_lightning_module_hook(
-  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/pytorch_lightning/trainer/call.py", line 167, in _call_lightning_module_hook
-    output = fn(*args, **kwargs)
-  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/pytorch_lightning/core/module.py", line 1306, in optimizer_step
-    optimizer.step(closure=optimizer_closure)
-  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/pytorch_lightning/core/optimizer.py", line 153, in step
-    step_output = self._strategy.optimizer_step(self._optimizer, closure, **kwargs)
-  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/pytorch_lightning/strategies/strategy.py", line 238, in optimizer_step
-    return self.precision_plugin.optimizer_step(optimizer, model=model, closure=closure, **kwargs)
-  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/pytorch_lightning/plugins/precision/amp.py", line 78, in optimizer_step
-    closure_result = closure()
-  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/pytorch_lightning/loops/optimization/automatic.py", line 144, in __call__
-    self._result = self.closure(*args, **kwargs)
-  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/torch/utils/_contextlib.py", line 116, in decorate_context
-    return func(*args, **kwargs)
-  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/pytorch_lightning/loops/optimization/automatic.py", line 129, in closure
-    step_output = self._step_fn()
-  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/pytorch_lightning/loops/optimization/automatic.py", line 317, in _training_step
-    training_step_output = call._call_strategy_hook(trainer, "training_step", *kwargs.values())
-  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/pytorch_lightning/trainer/call.py", line 319, in _call_strategy_hook
-    output = fn(*args, **kwargs)
-  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/pytorch_lightning/strategies/strategy.py", line 390, in training_step
-    return self.lightning_module.training_step(*args, **kwargs)
-  File "/scratch/hl106/zx_workspace/cto/VcEdit/threestudio/systems/VcEdit.py", line 91, in training_step
-    result = self.guidance(
-  File "/scratch/hl106/zx_workspace/cto/VcEdit/threestudio/models/guidance/infedit_guidance.py", line 154, in __call__
-    results = self.pipe(prompt=self.tgt_prompt,
-  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/torch/utils/_contextlib.py", line 116, in decorate_context
-    return func(*args, **kwargs)
-  File "/scratch/hl106/zx_workspace/cto/VcEdit/infedit/pipeline_con.py", line 232, in __call__
-    con_view_attn = torch.cat(con_view_attn, dim=1)
-torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 9.00 GiB. GPU 0 has a total capacity of 39.49 GiB of which 8.89 GiB is free. Including non-PyTorch memory, this process has 30.59 GiB memory in use. Of the allocated memory 29.07 GiB is allocated by PyTorch, and 1007.35 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
-Epoch 0: |          | 0/? [19:53<?, ?it/s]
+  7%|▋         | 1/15 [00:09<02:19,  9.97s/it][A
+ 13%|█▎        | 2/15 [00:19<02:06,  9.75s/it][A
+ 20%|██        | 3/15 [00:29<01:56,  9.69s/it][A

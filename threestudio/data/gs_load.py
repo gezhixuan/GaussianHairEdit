@@ -213,13 +213,33 @@ class GSLoadIterableDataset(IterableDataset, Updateable):
         super().__init__()
         self.cfg: GSLoadDataModuleConfig = cfg
         self.scene = scene
-        self.total_view_num = len(self.scene.cameras)
+
+        # --- NEW: uniformly limit to at most 65 views ---
+        full_total_view_num = len(self.scene.cameras)
+        max_views = 65
+
+        if full_total_view_num > max_views:
+            # Uniformly spaced indices from [0, full_total_view_num)
+            # This gives exactly `max_views` indices.
+            uniform_indices = [
+                (i * full_total_view_num) // max_views for i in range(max_views)
+            ]
+        else:
+            uniform_indices = list(range(full_total_view_num))
+
+        # Now we consider only these indices as potential views
+        self.total_view_num = len(uniform_indices)
+
         random.seed(0)  # make sure same views
-        self.n2n_view_index = random.sample(
-            range(0, self.total_view_num),
-            min(self.total_view_num, self.cfg.max_view_num),
-        )
+
+        # Respect cfg.max_view_num but never exceed our 65-uniform subset
+        num_views = min(self.total_view_num, self.cfg.max_view_num)
+
+        # Randomly permute within the uniformly filtered subset
+        self.n2n_view_index = random.sample(uniform_indices, num_views)
         self.view_index_stack = self.n2n_view_index.copy()
+        # --- END NEW ---
+
         self.heights: List[int] = (
             [self.cfg.height] if isinstance(self.cfg.height, int) else self.cfg.height
         )
@@ -275,7 +295,6 @@ class GSLoadIterableDataset(IterableDataset, Updateable):
         self.height = self.heights[size_ind]
         self.width = self.widths[size_ind]
         self.batch_size = self.batch_sizes[size_ind]
-        # self.directions_unit_focal = self.directions_unit_focals[size_ind]
         threestudio.debug(
             f"Training height: {self.height}, width: {self.width}, batch_size: {self.batch_size}"
         )

@@ -75,3 +75,204 @@ loaded pretrained LPIPS loss from threestudio/utils/lpips/vgg.pth
  13%|█▎        | 2/15 [00:28<03:06, 14.38s/it][A
  20%|██        | 3/15 [00:43<02:51, 14.32s/it][A
  27%|██▋       | 4/15 [00:57<02:38, 14.39s/it][A
+ 33%|███▎      | 5/15 [01:57<05:08, 30.82s/it][A
+ 40%|████      | 6/15 [02:12<03:49, 25.48s/it][ABlend Cross-Attention Consistency Control at t = 999 ...
+--step 1: inverse project maps to 3d ...
+--step 2: render back to maps ...
+Update Latents & Callback at t = 999 ...
+Finished t = 999.
+Blend Cross-Attention Consistency Control at t = 939 ...
+--step 1: inverse project maps to 3d ...
+--step 2: render back to maps ...
+Update Latents & Callback at t = 939 ...
+Finished t = 939.
+Blend Cross-Attention Consistency Control at t = 879 ...
+--step 1: inverse project maps to 3d ...
+--step 2: render back to maps ...
+Update Latents & Callback at t = 879 ...
+Finished t = 879.
+Blend Cross-Attention Consistency Control at t = 819 ...
+--step 1: inverse project maps to 3d ...
+--step 2: render back to maps ...
+Update Latents & Callback at t = 819 ...
+Finished t = 819.
+Prediction Consistency Control at t = 759 ...
+--step 1: inverse project images to 3d ...
+--step 2: render back to images ...
+Blend Cross-Attention Consistency Control at t = 759 ...
+--step 1: inverse project maps to 3d ...
+--step 2: render back to maps ...
+Update Latents & Callback at t = 759 ...
+Finished t = 759.
+Blend Cross-Attention Consistency Control at t = 699 ...
+--step 1: inverse project maps to 3d ...
+--step 2: render back to maps ...
+Update Latents & Callback at t = 699 ...
+Finished t = 699.
+Cross-Attention Consistency Control at t = 639 ...
+
+
+  0%|          | 0/4 [00:00<?, ?it/s][A[A
+
+ 25%|██▌       | 1/4 [00:44<02:14, 44.87s/it][A[A
+
+ 50%|█████     | 2/4 [01:28<01:28, 44.03s/it][A[A
+
+ 75%|███████▌  | 3/4 [02:13<00:44, 44.70s/it][A[A
+
+100%|██████████| 4/4 [02:59<00:00, 44.97s/it][A[A100%|██████████| 4/4 [02:59<00:00, 44.80s/it]
+
+
+  0%|          | 0/1 [00:00<?, ?it/s][A[A
+
+100%|██████████| 1/1 [00:42<00:00, 42.48s/it][A[A100%|██████████| 1/1 [00:42<00:00, 42.48s/it]
+
+
+  0%|          | 0/6 [00:00<?, ?it/s][A[A
+
+ 17%|█▋        | 1/6 [00:39<03:15, 39.01s/it][A[A
+
+ 33%|███▎      | 2/6 [01:18<02:36, 39.06s/it][A[A
+
+ 50%|█████     | 3/6 [01:57<01:57, 39.11s/it][A[A
+
+ 67%|██████▋   | 4/6 [02:36<01:18, 39.14s/it][A[A
+
+ 83%|████████▎ | 5/6 [03:15<00:39, 39.15s/it][A[A
+
+100%|██████████| 6/6 [03:54<00:00, 39.13s/it][A[A100%|██████████| 6/6 [03:54<00:00, 39.12s/it]
+
+ 47%|████▋     | 7/15 [10:16<23:23, 175.41s/it][A
+ 53%|█████▎    | 8/15 [10:31<14:28, 124.11s/it][A
+ 60%|██████    | 9/15 [10:45<08:58, 89.78s/it] [A
+ 67%|██████▋   | 10/15 [11:42<06:38, 79.63s/it][A
+ 73%|███████▎  | 11/15 [11:56<03:58, 59.66s/it][A
+ 80%|████████  | 12/15 [12:11<02:17, 45.94s/it][A
+ 87%|████████▋ | 13/15 [12:25<01:12, 36.42s/it][ABlend Cross-Attention Consistency Control at t = 639 ...
+--step 1: inverse project maps to 3d ...
+--step 2: render back to maps ...
+Update Latents & Callback at t = 639 ...
+Finished t = 639.
+Blend Cross-Attention Consistency Control at t = 579 ...
+--step 1: inverse project maps to 3d ...
+--step 2: render back to maps ...
+Update Latents & Callback at t = 579 ...
+Finished t = 579.
+Blend Cross-Attention Consistency Control at t = 519 ...
+--step 1: inverse project maps to 3d ...
+--step 2: render back to maps ...
+Update Latents & Callback at t = 519 ...
+Finished t = 519.
+Prediction Consistency Control at t = 459 ...
+--step 1: inverse project images to 3d ...
+--step 2: render back to images ...
+Blend Cross-Attention Consistency Control at t = 459 ...
+--step 1: inverse project maps to 3d ...
+--step 2: render back to maps ...
+Update Latents & Callback at t = 459 ...
+Finished t = 459.
+Blend Cross-Attention Consistency Control at t = 399 ...
+--step 1: inverse project maps to 3d ...
+--step 2: render back to maps ...
+Update Latents & Callback at t = 399 ...
+Finished t = 399.
+Blend Cross-Attention Consistency Control at t = 339 ...
+--step 1: inverse project maps to 3d ...
+--step 2: render back to maps ...
+Update Latents & Callback at t = 339 ...
+Finished t = 339.
+Blend Cross-Attention Consistency Control at t = 279 ...
+--step 1: inverse project maps to 3d ...
+--step 2: render back to maps ...
+Update Latents & Callback at t = 279 ...
+Finished t = 279.
+Cross-Attention Consistency Control at t = 219 ...
+
+
+  0%|          | 0/4 [00:00<?, ?it/s][A[A
+
+ 25%|██▌       | 1/4 [00:39<01:57, 39.18s/it][A[A
+
+ 50%|█████     | 2/4 [01:18<01:18, 39.12s/it][A[A
+
+ 75%|███████▌  | 3/4 [01:57<00:39, 39.06s/it][A[A
+
+100%|██████████| 4/4 [02:36<00:00, 39.11s/it][A[A100%|██████████| 4/4 [02:36<00:00, 39.11s/it]
+
+
+  0%|          | 0/1 [00:00<?, ?it/s][A[A
+
+100%|██████████| 1/1 [00:39<00:00, 39.03s/it][A[A100%|██████████| 1/1 [00:39<00:00, 39.04s/it]
+
+
+  0%|          | 0/6 [00:00<?, ?it/s][A[A
+
+ 17%|█▋        | 1/6 [00:39<03:15, 39.07s/it][A[A
+
+ 33%|███▎      | 2/6 [01:18<02:37, 39.31s/it][A[A
+
+ 50%|█████     | 3/6 [01:57<01:58, 39.36s/it][A[A
+
+ 67%|██████▋   | 4/6 [02:36<01:18, 39.16s/it][A[A
+
+ 83%|████████▎ | 5/6 [03:15<00:39, 39.08s/it][A[A 83%|████████▎ | 5/6 [03:55<00:47, 47.05s/it]
+ 87%|████████▋ | 13/15 [19:49<03:02, 91.49s/it]
+Traceback (most recent call last):
+  File "launch.py", line 250, in <module>
+    main(args, extras)
+  File "launch.py", line 193, in main
+    trainer.fit(system, datamodule=dm, ckpt_path=cfg.resume)
+  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/pytorch_lightning/trainer/trainer.py", line 538, in fit
+    call._call_and_handle_interrupt(
+  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/pytorch_lightning/trainer/call.py", line 47, in _call_and_handle_interrupt
+    return trainer_fn(*args, **kwargs)
+  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/pytorch_lightning/trainer/trainer.py", line 574, in _fit_impl
+    self._run(model, ckpt_path=ckpt_path)
+  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/pytorch_lightning/trainer/trainer.py", line 981, in _run
+    results = self._run_stage()
+  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/pytorch_lightning/trainer/trainer.py", line 1025, in _run_stage
+    self.fit_loop.run()
+  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/pytorch_lightning/loops/fit_loop.py", line 205, in run
+    self.advance()
+  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/pytorch_lightning/loops/fit_loop.py", line 363, in advance
+    self.epoch_loop.run(self._data_fetcher)
+  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/pytorch_lightning/loops/training_epoch_loop.py", line 140, in run
+    self.advance(data_fetcher)
+  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/pytorch_lightning/loops/training_epoch_loop.py", line 250, in advance
+    batch_output = self.automatic_optimization.run(trainer.optimizers[0], batch_idx, kwargs)
+  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/pytorch_lightning/loops/optimization/automatic.py", line 190, in run
+    self._optimizer_step(batch_idx, closure)
+  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/pytorch_lightning/loops/optimization/automatic.py", line 268, in _optimizer_step
+    call._call_lightning_module_hook(
+  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/pytorch_lightning/trainer/call.py", line 167, in _call_lightning_module_hook
+    output = fn(*args, **kwargs)
+  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/pytorch_lightning/core/module.py", line 1306, in optimizer_step
+    optimizer.step(closure=optimizer_closure)
+  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/pytorch_lightning/core/optimizer.py", line 153, in step
+    step_output = self._strategy.optimizer_step(self._optimizer, closure, **kwargs)
+  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/pytorch_lightning/strategies/strategy.py", line 238, in optimizer_step
+    return self.precision_plugin.optimizer_step(optimizer, model=model, closure=closure, **kwargs)
+  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/pytorch_lightning/plugins/precision/amp.py", line 78, in optimizer_step
+    closure_result = closure()
+  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/pytorch_lightning/loops/optimization/automatic.py", line 144, in __call__
+    self._result = self.closure(*args, **kwargs)
+  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/torch/utils/_contextlib.py", line 116, in decorate_context
+    return func(*args, **kwargs)
+  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/pytorch_lightning/loops/optimization/automatic.py", line 129, in closure
+    step_output = self._step_fn()
+  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/pytorch_lightning/loops/optimization/automatic.py", line 317, in _training_step
+    training_step_output = call._call_strategy_hook(trainer, "training_step", *kwargs.values())
+  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/pytorch_lightning/trainer/call.py", line 319, in _call_strategy_hook
+    output = fn(*args, **kwargs)
+  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/pytorch_lightning/strategies/strategy.py", line 390, in training_step
+    return self.lightning_module.training_step(*args, **kwargs)
+  File "/scratch/hl106/zx_workspace/cto/VcEdit/threestudio/systems/VcEdit.py", line 91, in training_step
+    result = self.guidance(
+  File "/scratch/hl106/zx_workspace/cto/VcEdit/threestudio/models/guidance/infedit_guidance.py", line 154, in __call__
+    results = self.pipe(prompt=self.tgt_prompt,
+  File "/home/hl106/.conda/envs/vcedit/lib/python3.8/site-packages/torch/utils/_contextlib.py", line 116, in decorate_context
+    return func(*args, **kwargs)
+  File "/scratch/hl106/zx_workspace/cto/VcEdit/infedit/pipeline_con.py", line 232, in __call__
+    con_view_attn = torch.cat(con_view_attn, dim=1)
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 9.00 GiB. GPU 0 has a total capacity of 39.49 GiB of which 8.89 GiB is free. Including non-PyTorch memory, this process has 30.59 GiB memory in use. Of the allocated memory 29.07 GiB is allocated by PyTorch, and 1007.35 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+Epoch 0: |          | 0/? [19:53<?, ?it/s]

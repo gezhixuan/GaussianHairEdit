@@ -10,6 +10,7 @@ import torch
 import threestudio
 import os
 from threestudio.systems.base import BaseLift3DSystem
+from sys import exit as e
 
 from threestudio.utils.typing import *
 from gaussiansplatting.gaussian_renderer import render
@@ -65,6 +66,9 @@ class GaussianEditor(BaseLift3DSystem):
         anchor_weight_init_g0: float = 1.0
         anchor_weight_multiplier: float = 2
         training_args: dict = field(default_factory=dict)
+        
+        save_ply_interval: int = 400  # 0: disabled, 1: every step, N: every N steps
+
 
     cfg: Config
 
@@ -145,6 +149,8 @@ class GaussianEditor(BaseLift3DSystem):
             for id in tqdm(self.view_list):
                 cur_path = os.path.join(mask_cache_dir, "{:0>4d}.png".format(id))
                 cur_mask = cv2.imread(cur_path)
+                print(cur_path, cur_mask)
+                e()
                 cur_mask = torch.tensor(
                     cur_mask / 255, device="cuda", dtype=torch.float32
                 )[..., 0][None]
@@ -177,6 +183,24 @@ class GaussianEditor(BaseLift3DSystem):
         # =================== DEBUG END ===================
 
         return selected_mask
+    
+    def _save_guidance_ply(self):
+        # nothing to do if disabled
+        if getattr(self.cfg, "save_ply_interval", 0) <= 0:
+            return
+
+        # respect interval
+        if self.true_global_step % self.cfg.save_ply_interval != 0:
+            return
+
+        # save under the same root as other outputs
+        rel_path = f"guidance_ply/it{self.true_global_step:06d}.ply"
+        save_path = self.get_save_path(rel_path)
+
+        os.makedirs(os.path.dirname(save_path), exist_ok=True)
+        self.gaussian.save_ply(save_path)
+        print(f"[PLY] Saved gaussian ply at step {self.true_global_step} -> {save_path}")
+
 
     def on_validation_epoch_end(self):
         pass
@@ -430,6 +454,8 @@ class GaussianEditor(BaseLift3DSystem):
         return render_frames
 
     def on_before_optimizer_step(self, optimizer):
+        
+        self._save_guidance_ply()
         with torch.no_grad():
             if self.true_global_step < self.cfg.densify_until_iter:
                 viewspace_point_tensor_grad = torch.zeros_like(

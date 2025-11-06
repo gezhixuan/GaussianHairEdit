@@ -213,8 +213,9 @@ debug/
 debug_Zhixuan/
 debug_Liza_new/
 
-gaussian-splatting/submodules
-ext/hyperIQA/pretrained
-
+gaussian-splatting/submodules/
+ext/hyperIQA/pretrained/
+edit_cache/
+.threestudio_cache/
 # data
 # gs_data/

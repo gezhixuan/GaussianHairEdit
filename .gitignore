@@ -205,11 +205,13 @@ exp/
 tmp_add/
 .idea/
 
-# 私密脚本，不上传
+# 
 11.8.sh
 
-# 调试输出
+# debug
 debug/
+debug_Zhixuan/
+debug_Liza_new/
 
 # 数据文件夹
 # gs_data/

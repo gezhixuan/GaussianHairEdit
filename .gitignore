@@ -213,5 +213,8 @@ debug/
 debug_Zhixuan/
 debug_Liza_new/
 
-# 数据文件夹
+gaussian-splatting/submodules
+ext/hyperIQA/pretrained
+
+# data
 # gs_data/

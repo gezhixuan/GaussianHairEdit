@@ -1,6 +1,9 @@
-# ID="Someone"
-ID="Zhixuan"
+ID="Someone"
+# export USER
+# ID="Zhixuan"
 # ID="Liza_new"
+
+rm -rf "./debug_$ID"
 
 python launch.py --config configs/edit-inf.yaml \
 --train \

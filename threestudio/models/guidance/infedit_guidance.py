@@ -23,6 +23,9 @@ class InfEditGuidance(BaseObject):
     class Config(BaseObject.Config):
         cache_dir: Optional[str] = None
         model_name_or_path: str = "SimianLuo/LCM_Dreamshaper_v7"
+        # model_name_or_path: str = "SG161222/Realistic_Vision_V5.1_noVAE"
+        # model_name_or_path: str = "SG161222/Realistic_Vision_V3.0_VAE"
+        
 
         enable_memory_efficient_attention: bool = False
         enable_sequential_cpu_offload: bool = False

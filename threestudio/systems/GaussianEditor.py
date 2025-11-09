@@ -204,6 +204,134 @@ class GaussianEditor(BaseLift3DSystem):
 
     def on_validation_epoch_end(self):
         pass
+    
+    # def on_validation_epoch_end(self):
+    #         # This hook is called at the end of each validation loop.
+    #         # We will use it to render the full test set.
+            
+    #         threestudio.info(f"Running periodic test render at step {self.true_global_step}...")
+            
+    #         # Get test dataloader
+    #         try:
+    #             test_loader = self.trainer.datamodule.test_dataloader()
+    #         except Exception as e:
+    #             threestudio.warn(f"Could not get test_dataloader: {e}. Skipping periodic test render.")
+    #             return
+
+    #         # Set background
+    #         bg_color = [1, 1, 1] if False else [0, 0, 0]
+    #         testbackground_tensor = torch.tensor(
+    #             bg_color, dtype=torch.float32, device=self.device
+    #         )
+            
+    #         # Loop through all test batches
+    #         with torch.no_grad():
+    #             for batch in tqdm(test_loader, desc=f"Periodic Test Render (Step {self.true_global_step})"):
+    #                 # Move batch to device
+    #                 batch = {k: v.to(self.device) if isinstance(v, torch.Tensor) else v for k, v in batch.items()}
+
+    #                 # --- Start of logic copied from test_step ---
+    #                 batch["camera"] = [
+    #                     self.trainer.datamodule.val_dataset.scene.cameras[batch["index"]]
+    #                 ]
+                    
+    #                 only_rgb = True  # Hardcoded in your test_step
+    #                 out = self(batch, testbackground_tensor)
+                    
+    #                 if only_rgb:
+    #                     self.save_image_grid(
+    #                         f"it{self.true_global_step}-test/{batch['index'][0]}.png",
+    #                         [
+    #                             {
+    #                                 "type": "rgb",
+    #                                 "img": out["comp_rgb"][0],
+    #                                 "kwargs": {"data_format": "HWC"},
+    #                             },
+    #                         ]
+    #                         + (
+    #                             [
+    #                                 {
+    #                                     "type": "rgb",
+    #                                     "img": out["comp_normal"][0],
+    #                                     "kwargs": {"data_format": "HWC", "data_range": (0, 1)},
+    #                                 }
+    #                             ]
+    #                             if "comp_normal" in out
+    #                             else []
+    #                         ),
+    #                         name="test_step",
+    #                         step=self.true_global_step,
+    #                     )
+    #                 else:
+    #                     self.save_image_grid(
+    #                         f"it{self.true_global_step}-test/{batch['index'][0]}.png",
+    #                         (
+    #                             [
+    #                                 {
+    #                                     "type": "rgb",
+    #                                     "img": batch["rgb"][0],
+    #                                     "kwargs": {"data_format": "HWC"},
+    #                                 }
+    #                             ]
+    #                             if "rgb" in batch
+    #                             else []
+    #                         )
+    #                         + [
+    #                             {
+    #                                 "type": "rgb",
+    #                                 "img": out["comp_rgb"][0],
+    #                                 "kwargs": {"data_format": "HWC"},
+    #                             },
+    #                         ]
+    #                         + (
+    #                             [
+    #                                 {
+    #                                     "type": "rgb",
+    #                                     "img": out["comp_normal"][0],
+    #                                     "kwargs": {"data_format": "HWC", "data_range": (0, 1)},
+    #                                 }
+    #                             ]
+    #                             if "comp_normal" in out
+    #                             else []
+    #                         )
+    #                         + (
+    #                             [
+    #                                 {
+    #                                     "type": "grayscale",
+    #                                     "img": out["depth"][0],
+    #                                     "kwargs": {},
+    #                                 }
+    #                             ]
+    #                             if "depth" in out
+    #                             else []
+    #                         )
+    #                         + [
+    #                             {
+    #                                 "type": "grayscale",
+    #                                 "img": out["opacity"][0, :, :, 0],
+    #                                 "kwargs": {"cmap": None, "data_range": (0, 1)},
+    #                             },
+    #                         ],
+    #                         name="test_step",
+    #                         step=self.true_global_step,
+    #                     )
+    #                 # --- End of logic copied from test_step ---
+
+    #         # --- Start of logic copied from on_test_epoch_end ---
+    #         # (We only copy the video saving part)
+    #         threestudio.info(f"Saving test video at step {self.true_global_step}...")
+    #         self.save_img_sequence(
+    #             f"it{self.true_global_step}-test",
+    #             f"it{self.true_global_step}-test",
+    #             "(\d+)\.png",
+    #             save_format="mp4",
+    #             fps=2,
+    #             name="test",
+    #             step=self.true_global_step,
+    #         )
+    #         # --- End of logic copied from on_test_epoch_end ---
+            
+    #         threestudio.info(f"Periodic test render finished at step {self.true_global_step}.")
 
     def forward(self, batch: Dict[str, Any], renderbackground=None, local=False) -> Dict[str, Any]:
         if renderbackground is None:
@@ -488,37 +616,106 @@ class GaussianEditor(BaseLift3DSystem):
                         size_threshold,
                     )
 
+    # def validation_step(self, batch, batch_idx):
+    #     batch["camera"] = [
+    #         self.trainer.datamodule.train_dataset.scene.cameras[idx]
+    #         for idx in batch["index"]
+    #     ]
+    #     out = self(batch)
+    #     for idx in range(len(batch["index"])):
+    #         cam_index = batch["index"][idx].item()
+    #         self.save_image_grid(
+    #             f"it{self.true_global_step}-{batch['index'][idx]}.png",
+    #             (
+    #                 [
+    #                     {
+    #                         "type": "rgb",
+    #                         "img": self.origin_frames[cam_index][0],
+    #                         "kwargs": {"data_format": "HWC"},
+    #                     },
+    #                     {
+    #                         "type": "rgb",
+    #                         "img": self.edit_frames[cam_index][0]
+    #                         if cam_index in self.edit_frames
+    #                         else torch.zeros_like(self.origin_frames[cam_index][0]),
+    #                         "kwargs": {"data_format": "HWC"},
+    #                     },
+    #                 ]
+    #             ),
+    #             name=f"validation_step_{idx}",
+    #             step=self.true_global_step,
+    #         )
+    #         self.save_image_grid(
+    #             f"render_it{self.true_global_step}-{batch['index'][idx]}.png",
+    #             [
+    #                 {
+    #                     "type": "rgb",
+    #                     "img": out["comp_rgb"][idx],
+    #                     "kwargs": {"data_format": "HWC"},
+    #                 },
+    #             ]
+    #             + (
+    #                 [
+    #                     {
+    #                         "type": "rgb",
+    #                         "img": out["comp_normal"][idx],
+    #                         "kwargs": {"data_format": "HWC", "data_range": (0, 1)},
+    #                     }
+    #                 ]
+    #                 if "comp_normal" in out
+    #                 else []
+    #             )
+    #             + (
+    #                 [
+    #                     {
+    #                         "type": "rgb",
+    #                         "img": out["semantic"][idx].moveaxis(0, -1),
+    #                         "kwargs": {"data_format": "HWC", "data_range": (0, 1)},
+    #                     }
+    #                 ]
+    #                 if "semantic" in out
+    #                 else []
+    #             ),
+    #             name=f"validation_step_render_{idx}",
+    #             step=self.true_global_step,
+    #         )
+    
     def validation_step(self, batch, batch_idx):
+        # Use the same cameras as before (train_dataset)
         batch["camera"] = [
             self.trainer.datamodule.train_dataset.scene.cameras[idx]
             for idx in batch["index"]
         ]
         out = self(batch)
+
+        # 1) Keep your existing image logging
         for idx in range(len(batch["index"])):
             cam_index = batch["index"][idx].item()
+
+            # --- original vs edited image grid ---
             self.save_image_grid(
-                f"it{self.true_global_step}-{batch['index'][idx]}.png",
-                (
-                    [
-                        {
-                            "type": "rgb",
-                            "img": self.origin_frames[cam_index][0],
-                            "kwargs": {"data_format": "HWC"},
-                        },
-                        {
-                            "type": "rgb",
-                            "img": self.edit_frames[cam_index][0]
-                            if cam_index in self.edit_frames
-                            else torch.zeros_like(self.origin_frames[cam_index][0]),
-                            "kwargs": {"data_format": "HWC"},
-                        },
-                    ]
-                ),
+                f"it{self.true_global_step}-{cam_index:04d}.png",
+                [
+                    {
+                        "type": "rgb",
+                        "img": self.origin_frames[cam_index][0],
+                        "kwargs": {"data_format": "HWC"},
+                    },
+                    {
+                        "type": "rgb",
+                        "img": self.edit_frames[cam_index][0]
+                        if cam_index in self.edit_frames
+                        else torch.zeros_like(self.origin_frames[cam_index][0]),
+                        "kwargs": {"data_format": "HWC"},
+                    },
+                ],
                 name=f"validation_step_{idx}",
                 step=self.true_global_step,
             )
+
+            # --- rendered outputs grid ---
             self.save_image_grid(
-                f"render_it{self.true_global_step}-{batch['index'][idx]}.png",
+                f"render_it{self.true_global_step}-{cam_index:04d}.png",
                 [
                     {
                         "type": "rgb",
@@ -542,7 +739,10 @@ class GaussianEditor(BaseLift3DSystem):
                         {
                             "type": "rgb",
                             "img": out["semantic"][idx].moveaxis(0, -1),
-                            "kwargs": {"data_format": "HWC", "data_range": (0, 1)},
+                            "kwargs": {
+                                "data_format": "HWC",
+                                "data_range": (0, 1),
+                            },
                         }
                     ]
                     if "semantic" in out
@@ -551,6 +751,35 @@ class GaussianEditor(BaseLift3DSystem):
                 name=f"validation_step_render_{idx}",
                 step=self.true_global_step,
             )
+
+            # 2) NEW: save a simple per-view frame for the validation video
+            #    Folder layout: it{step}-val/<cam_index>.png  (numeric names for regex)
+            self.save_image_grid(
+                f"it{self.true_global_step}-val/{cam_index:04d}.png",
+                [
+                    {
+                        "type": "rgb",
+                        "img": out["comp_rgb"][idx],
+                        "kwargs": {"data_format": "HWC"},
+                    },
+                ],
+                name="validation_video_frame",
+                step=self.true_global_step,
+            )
+
+        # 3) NEW: (re)build the validation video directly in validation_step
+        # This will be called every validation_step; the last call will see all frames
+        # in it{step}-val/ and produce the final MP4.
+        self.save_img_sequence(
+            f"it{self.true_global_step}-val",   # directory where frames are saved
+            f"it{self.true_global_step}-val",   # prefix (kept same as directory like test)
+            r"(\d+)\.png",                      # match 0000.png, 0001.png, ...
+            save_format="mp4",
+            fps=2,
+            name="val",                         # tag/name in logger
+            step=self.true_global_step,
+        )
+
 
     def test_step(self, batch, batch_idx):
         only_rgb = True  # TODO add depth test step

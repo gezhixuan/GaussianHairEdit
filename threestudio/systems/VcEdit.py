@@ -12,9 +12,9 @@ from threestudio.systems.GaussianEditor import GaussianEditor
 import cv2
 import numpy as np
 
-debug_root = "./debug_Someone"
+# debug_root = "./debug_Someone"
 # debug_root = "./debug_ZhixuanV3.0"
-# debug_root = "./debug_Zhixuan"
+debug_root = "./debug_Zhixuan"
 # debug_root = "./debug_Liza_new"
 
 

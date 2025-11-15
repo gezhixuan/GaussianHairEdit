@@ -1,6 +1,6 @@
-ID="Someone"
+# ID="Someone"
 # export USER
-# ID="Zhixuan"
+ID="Zhixuan"
 # ID="Liza_new"
 
 rm -rf "./debug_$ID"

@@ -4,7 +4,7 @@ from PIL import Image
 import io
 import cairosvg
 # Render SVG to PNG bytes
-client = genai.Client(api_key="AIzaSyCrNtuXfYmlQpP_ys42P4VJ4JVTf8-6Cu4")
+client = genai.Client()
 
 man_image = Image.open('/scratch/hl106/zx_workspace/cto/VcEdit/gs_data/Zhixuan/input/000004.png')
 svg_path =  "'/scratch/hl106/zx_workspace/cto/VcEdit/gs_data/icons/1/hairstyle-female-svgrepo-com.svg'"

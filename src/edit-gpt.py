@@ -3,7 +3,7 @@ from PIL import Image
 import base64
 import io
 
-client = OpenAI(api_key="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")
+client = OpenAI()
 
 # Base image prompt: "A photorealistic picture of a fluffy ginger cat sitting on a wooden floor,
 # looking directly at the camera. Soft, natural light from a window."

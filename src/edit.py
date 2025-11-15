@@ -6,7 +6,7 @@ import io
 
 
 
-client = genai.Client(api_key="AIzaSyCrNtuXfYmlQpP_ys42P4VJ4JVTf8-6Cu4")
+client = genai.Client()
 
 # response = client.models.generate_content(
 #     model="gemini-2.5-flash", contents="Explain how AI works in a few words"

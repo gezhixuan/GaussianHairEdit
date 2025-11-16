@@ -8,13 +8,18 @@
 # ID="Liza_gemeni"
 # ID="Liza_gemeni_long"
 # ID="Liza_gemeni_buzzcut_clip"
-ID="Liza_gemeni_buzzcut_clip0.28"
+# ID="Liza_gemeni_buzzcut_clip0.28"
+# ID="Liza_aligned"
+# ID="Liza_aligned_clip0.3"
+# ID="Liza_gemeni_resized"
+# ID="Liza_aligned_clip0.24"
+ID="Liza_aligned_clip0.28"
 
 
 export PROJECT_DIR="/scratch/hl106/zx_workspace/cto/VcEdit"
 export DATA_PATH="$PROJECT_DIR/gs_data/$ID"
 export CAMERA="PINHOLE"
-export GPU=7
+export GPU=6
 export PYTHONPATH="$PROJECT_DIR:$PYTHONPATH"
 
 
@@ -44,7 +49,7 @@ eval "$(conda shell.bash hook)"
 cd "$PROJECT_DIR"
 conda deactivate && conda activate vanilla_gaussian_splatting
 CUDA_VISIBLE_DEVICES="$GPU" python gaussian-splatting/train.py -s $DATA_PATH \
-      --model_path $DATA_PATH/3d_gaussian_splatting --port 10086
+      --model_path $DATA_PATH/3d_gaussian_splatting --port 1007$GPU
 
 # mkdir -p "$PROJECT_DIR/gs_data/trained_gs_models/$ID"
 # cp -r $DATA_PATH/3d_gaussian_splatting/iteration_30000/point_cloud.ply $PROJECT_DIR/gs_data/trained_gs_models/$ID

@@ -8,6 +8,64 @@ from google.genai import types
 from PIL import Image
 from tqdm import tqdm
 
+# selected_list = [
+#     "000050.png",
+#     "000153.png",
+#     "000174.png",
+#     "000182.png",
+#     "000212.png",
+#     "000234.png",
+#     "000271.png",
+#     "000280.png",
+#     "000282.png",
+#     "000298.png",
+#     "000354.png",
+#     "000365.png",
+#     "000392.png",
+#     "000400.png",
+#     "000414.png",
+#     "000427.png",
+#     "000446.png",
+#     "000453.png",
+#     "000465.png",
+#     "000473.png",
+#     "000482.png",
+#     "000485.png",
+#     "000492.png",
+#     "000506.png",
+#     "000513.png",
+#     "000538.png",
+# ]
+
+selected_list = [
+#     "000050.png",
+#     "000153.png",
+#     "000174.png",
+#     "000182.png",
+#     "000212.png",
+    "000234.png",
+#     "000271.png",
+#     "000280.png",
+#     "000282.png",
+#     "000298.png",
+#     "000354.png",
+#     "000365.png",
+#     "000392.png",
+#     "000400.png",
+#     "000414.png",
+#     "000427.png",
+#     "000446.png",
+#     "000453.png",
+#     "000465.png",
+#     "000473.png",
+#     "000482.png",
+#     "000485.png",
+#     "000492.png",
+#     "000506.png",
+#     "000513.png",
+#     "000538.png",
+]
+
 
 def parse_args():
     parser = argparse.ArgumentParser(
@@ -40,7 +98,8 @@ def parse_args():
     parser.add_argument(
         "--model",
         type=str,
-        default="gemini-2.5-flash-image",
+        # default="gemini-2.5-flash-image",
+        default="gemini-2.5-pro",
         help="Gemini image model name.",
     )
     return parser.parse_args()
@@ -64,9 +123,9 @@ def main():
     # text_input = (
     #     "Using the provided image, please change the hairstyle to long natural curls"
     # )
-
+    
     text_input = (
-        "change the hairstyle to buzz cut."
+        "remove the braids"
     )
 
     pattern = os.path.join(args.image_dir, f"*.{args.ext}")
@@ -84,6 +143,8 @@ def main():
     )
 
     for img_path in tqdm(to_process, desc="Editing images", unit="img"):
+        if img_path.split('/')[-1] not in selected_list:
+            continue
         try:
             # Open the original image
             image_input = Image.open(img_path)

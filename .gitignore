@@ -228,3 +228,5 @@ InstantSplat/
 # ./ext/Stable-Hair/models
 # ./ext/Stable-Hair/diffusers
 ./ext/Stable-Hair
+*.csv
+*.out

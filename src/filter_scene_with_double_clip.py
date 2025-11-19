@@ -1,0 +1,983 @@
+# Copyright (c), ETH Zurich and UNC Chapel Hill.
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#     * Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#
+#     * Neither the name of ETH Zurich and UNC Chapel Hill nor the names of
+#       its contributors may be used to endorse or promote products derived
+#       from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+
+import argparse
+import collections
+import os
+import struct
+import shutil
+
+import numpy as np
+
+# ---- New imports for CLIP filtering ----
+import torch
+import clip
+from PIL import Image as PILImage
+import matplotlib.pyplot as plt  # NEW: for distribution diagram
+
+# -------------------------------------------------------------------------
+# COLMAP data structures and I/O
+# -------------------------------------------------------------------------
+
+CameraModel = collections.namedtuple(
+    "CameraModel", ["model_id", "model_name", "num_params"]
+)
+Camera = collections.namedtuple(
+    "Camera", ["id", "model", "width", "height", "params"]
+)
+BaseImage = collections.namedtuple(
+    "Image", ["id", "qvec", "tvec", "camera_id", "name", "xys", "point3D_ids"]
+)
+Point3D = collections.namedtuple(
+    "Point3D", ["id", "xyz", "rgb", "error", "image_ids", "point2D_idxs"]
+)
+
+
+class ImageColmap(BaseImage):
+    def qvec2rotmat(self):
+        return qvec2rotmat(self.qvec)
+
+
+# Note: keep the public name "Image" compatible with original code.
+Image = ImageColmap
+
+CAMERA_MODELS = {
+    CameraModel(model_id=0, model_name="SIMPLE_PINHOLE", num_params=3),
+    CameraModel(model_id=1, model_name="PINHOLE", num_params=4),
+    CameraModel(model_id=2, model_name="SIMPLE_RADIAL", num_params=4),
+    CameraModel(model_id=3, model_name="RADIAL", num_params=5),
+    CameraModel(model_id=4, model_name="OPENCV", num_params=8),
+    CameraModel(model_id=5, model_name="OPENCV_FISHEYE", num_params=8),
+    CameraModel(model_id=6, model_name="FULL_OPENCV", num_params=12),
+    CameraModel(model_id=7, model_name="FOV", num_params=5),
+    CameraModel(model_id=8, model_name="SIMPLE_RADIAL_FISHEYE", num_params=4),
+    CameraModel(model_id=9, model_name="RADIAL_FISHEYE", num_params=5),
+    CameraModel(model_id=10, model_name="THIN_PRISM_FISHEYE", num_params=12),
+}
+CAMERA_MODEL_IDS = dict(
+    [(camera_model.model_id, camera_model) for camera_model in CAMERA_MODELS]
+)
+CAMERA_MODEL_NAMES = dict(
+    [(camera_model.model_name, camera_model) for camera_model in CAMERA_MODELS]
+)
+
+
+def read_next_bytes(fid, num_bytes, format_char_sequence, endian_character="<"):
+    """Read and unpack the next bytes from a binary file."""
+    data = fid.read(num_bytes)
+    return struct.unpack(endian_character + format_char_sequence, data)
+
+
+def write_next_bytes(fid, data, format_char_sequence, endian_character="<"):
+    """Pack and write to a binary file."""
+    if isinstance(data, (list, tuple)):
+        bytes_to_write = struct.pack(endian_character + format_char_sequence, *data)
+    else:
+        bytes_to_write = struct.pack(endian_character + format_char_sequence, data)
+    fid.write(bytes_to_write)
+
+
+def read_cameras_text(path):
+    cameras = {}
+    with open(path, "r") as fid:
+        while True:
+            line = fid.readline()
+            if not line:
+                break
+            line = line.strip()
+            if len(line) > 0 and line[0] != "#":
+                elems = line.split()
+                camera_id = int(elems[0])
+                model = elems[1]
+                width = int(elems[2])
+                height = int(elems[3])
+                params = np.array(tuple(map(float, elems[4:])))
+                cameras[camera_id] = Camera(
+                    id=camera_id,
+                    model=model,
+                    width=width,
+                    height=height,
+                    params=params,
+                )
+    return cameras
+
+
+def read_cameras_binary(path_to_model_file):
+    cameras = {}
+    with open(path_to_model_file, "rb") as fid:
+        num_cameras = read_next_bytes(fid, 8, "Q")[0]
+        for _ in range(num_cameras):
+            camera_properties = read_next_bytes(
+                fid, num_bytes=24, format_char_sequence="iiQQ"
+            )
+            camera_id = camera_properties[0]
+            model_id = camera_properties[1]
+            model_name = CAMERA_MODEL_IDS[camera_properties[1]].model_name
+            width = camera_properties[2]
+            height = camera_properties[3]
+            num_params = CAMERA_MODEL_IDS[model_id].num_params
+            params = read_next_bytes(
+                fid,
+                num_bytes=8 * num_params,
+                format_char_sequence="d" * num_params,
+            )
+            cameras[camera_id] = Camera(
+                id=camera_id,
+                model=model_name,
+                width=width,
+                height=height,
+                params=np.array(params),
+            )
+        assert len(cameras) == num_cameras
+    return cameras
+
+
+def write_cameras_text(cameras, path):
+    HEADER = (
+        "# Camera list with one line of data per camera:\n"
+        + "#   CAMERA_ID, MODEL, WIDTH, HEIGHT, PARAMS[]\n"
+        + "# Number of cameras: {}\n".format(len(cameras))
+    )
+    with open(path, "w") as fid:
+        fid.write(HEADER)
+        for _, cam in cameras.items():
+            to_write = [cam.id, cam.model, cam.width, cam.height, *cam.params]
+            line = " ".join([str(elem) for elem in to_write])
+            fid.write(line + "\n")
+
+
+def write_cameras_binary(cameras, path_to_model_file):
+    with open(path_to_model_file, "wb") as fid:
+        write_next_bytes(fid, len(cameras), "Q")
+        for _, cam in cameras.items():
+            model_id = CAMERA_MODEL_NAMES[cam.model].model_id
+            camera_properties = [cam.id, model_id, cam.width, cam.height]
+            write_next_bytes(fid, camera_properties, "iiQQ")
+            for p in cam.params:
+                write_next_bytes(fid, float(p), "d")
+    return cameras
+
+
+def read_images_text(path):
+    images = {}
+    with open(path, "r") as fid:
+        while True:
+            line = fid.readline()
+            if not line:
+                break
+            line = line.strip()
+            if len(line) > 0 and line[0] != "#":
+                elems = line.split()
+                image_id = int(elems[0])
+                qvec = np.array(tuple(map(float, elems[1:5])))
+                tvec = np.array(tuple(map(float, elems[5:8])))
+                camera_id = int(elems[8])
+                image_name = elems[9]
+                elems = fid.readline().split()
+                xys = np.column_stack(
+                    [
+                        tuple(map(float, elems[0::3])),
+                        tuple(map(float, elems[1::3])),
+                    ]
+                )
+                point3D_ids = np.array(tuple(map(int, elems[2::3])))
+                images[image_id] = Image(
+                    id=image_id,
+                    qvec=qvec,
+                    tvec=tvec,
+                    camera_id=camera_id,
+                    name=image_name,
+                    xys=xys,
+                    point3D_ids=point3D_ids,
+                )
+    return images
+
+
+def read_images_binary(path_to_model_file):
+    images = {}
+    with open(path_to_model_file, "rb") as fid:
+        num_reg_images = read_next_bytes(fid, 8, "Q")[0]
+        for _ in range(num_reg_images):
+            binary_image_properties = read_next_bytes(
+                fid, num_bytes=64, format_char_sequence="idddddddi"
+            )
+            image_id = binary_image_properties[0]
+            qvec = np.array(binary_image_properties[1:5])
+            tvec = np.array(binary_image_properties[5:8])
+            camera_id = binary_image_properties[8]
+            binary_image_name = b""
+            current_char = read_next_bytes(fid, 1, "c")[0]
+            while current_char != b"\x00":  # look for the ASCII 0 entry
+                binary_image_name += current_char
+                current_char = read_next_bytes(fid, 1, "c")[0]
+            image_name = binary_image_name.decode("utf-8")
+            num_points2D = read_next_bytes(
+                fid, num_bytes=8, format_char_sequence="Q"
+            )[0]
+            x_y_id_s = read_next_bytes(
+                fid,
+                num_bytes=24 * num_points2D,
+                format_char_sequence="ddq" * num_points2D,
+            )
+            xys = np.column_stack(
+                [
+                    tuple(map(float, x_y_id_s[0::3])),
+                    tuple(map(float, x_y_id_s[1::3])),
+                ]
+            )
+            point3D_ids = np.array(tuple(map(int, x_y_id_s[2::3])))
+            images[image_id] = Image(
+                id=image_id,
+                qvec=qvec,
+                tvec=tvec,
+                camera_id=camera_id,
+                name=image_name,
+                xys=xys,
+                point3D_ids=point3D_ids,
+            )
+    return images
+
+
+def write_images_text(images, path):
+    if len(images) == 0:
+        mean_observations = 0
+    else:
+        mean_observations = sum(
+            (len(img.point3D_ids) for _, img in images.items())
+        ) / len(images)
+    HEADER = (
+        "# Image list with two lines of data per image:\n"
+        + "#   IMAGE_ID, QW, QX, QY, QZ, TX, TY, TZ, CAMERA_ID, NAME\n"
+        + "#   POINTS2D[] as (X, Y, POINT3D_ID)\n"
+        + "# Number of images: {}, mean observations per image: {}\n".format(
+            len(images), mean_observations
+        )
+    )
+
+    with open(path, "w") as fid:
+        fid.write(HEADER)
+        for _, img in images.items():
+            image_header = [
+                img.id,
+                *img.qvec,
+                *img.tvec,
+                img.camera_id,
+                img.name,
+            ]
+            first_line = " ".join(map(str, image_header))
+            fid.write(first_line + "\n")
+
+            points_strings = []
+            for xy, point3D_id in zip(img.xys, img.point3D_ids):
+                points_strings.append(" ".join(map(str, [*xy, point3D_id])))
+            fid.write(" ".join(points_strings) + "\n")
+
+
+def write_images_binary(images, path_to_model_file):
+    with open(path_to_model_file, "wb") as fid:
+        write_next_bytes(fid, len(images), "Q")
+        for _, img in images.items():
+            write_next_bytes(fid, img.id, "i")
+            write_next_bytes(fid, img.qvec.tolist(), "dddd")
+            write_next_bytes(fid, img.tvec.tolist(), "ddd")
+            write_next_bytes(fid, img.camera_id, "i")
+            for char in img.name:
+                write_next_bytes(fid, char.encode("utf-8"), "c")
+            write_next_bytes(fid, b"\x00", "c")
+            write_next_bytes(fid, len(img.point3D_ids), "Q")
+            for xy, p3d_id in zip(img.xys, img.point3D_ids):
+                write_next_bytes(fid, [*xy, p3d_id], "ddq")
+
+
+def read_points3D_text(path):
+    points3D = {}
+    with open(path, "r") as fid:
+        while True:
+            line = fid.readline()
+            if not line:
+                break
+            line = line.strip()
+            if len(line) > 0 and line[0] != "#":
+                elems = line.split()
+                point3D_id = int(elems[0])
+                xyz = np.array(tuple(map(float, elems[1:4])))
+                rgb = np.array(tuple(map(int, elems[4:7])))
+                error = float(elems[7])
+                image_ids = np.array(tuple(map(int, elems[8::2])))
+                point2D_idxs = np.array(tuple(map(int, elems[9::2])))
+                points3D[point3D_id] = Point3D(
+                    id=point3D_id,
+                    xyz=xyz,
+                    rgb=rgb,
+                    error=error,
+                    image_ids=image_ids,
+                    point2D_idxs=point2D_idxs,
+                )
+    return points3D
+
+
+def read_points3D_binary(path_to_model_file):
+    points3D = {}
+    with open(path_to_model_file, "rb") as fid:
+        num_points = read_next_bytes(fid, 8, "Q")[0]
+        for _ in range(num_points):
+            binary_point_line_properties = read_next_bytes(
+                fid, num_bytes=43, format_char_sequence="QdddBBBd"
+            )
+            point3D_id = binary_point_line_properties[0]
+            xyz = np.array(binary_point_line_properties[1:4])
+            rgb = np.array(binary_point_line_properties[4:7])
+            error = np.array(binary_point_line_properties[7])
+            track_length = read_next_bytes(
+                fid, num_bytes=8, format_char_sequence="Q"
+            )[0]
+            track_elems = read_next_bytes(
+                fid,
+                num_bytes=8 * track_length,
+                format_char_sequence="ii" * track_length,
+            )
+            image_ids = np.array(tuple(map(int, track_elems[0::2])))
+            point2D_idxs = np.array(tuple(map(int, track_elems[1::2])))
+            points3D[point3D_id] = Point3D(
+                id=point3D_id,
+                xyz=xyz,
+                rgb=rgb,
+                error=error,
+                image_ids=image_ids,
+                point2D_idxs=point2D_idxs,
+            )
+    return points3D
+
+
+def write_points3D_text(points3D, path):
+    if len(points3D) == 0:
+        mean_track_length = 0
+    else:
+        mean_track_length = sum(
+            (len(pt.image_ids) for _, pt in points3D.items())
+        ) / len(points3D)
+    HEADER = (
+        "# 3D point list with one line of data per point:\n"
+        + "#   POINT3D_ID, X, Y, Z, R, G, B, ERROR, TRACK[] as (IMAGE_ID, POINT2D_IDX)\n"
+        + "# Number of points: {}, mean track length: {}\n".format(
+            len(points3D), mean_track_length
+        )
+    )
+
+    with open(path, "w") as fid:
+        fid.write(HEADER)
+        for _, pt in points3D.items():
+            point_header = [pt.id, *pt.xyz, *pt.rgb, pt.error]
+            fid.write(" ".join(map(str, point_header)) + " ")
+            track_strings = []
+            for image_id, point2D in zip(pt.image_ids, pt.point2D_idxs):
+                track_strings.append(" ".join(map(str, [image_id, point2D])))
+            fid.write(" ".join(track_strings) + "\n")
+
+
+def write_points3D_binary(points3D, path_to_model_file):
+    with open(path_to_model_file, "wb") as fid:
+        write_next_bytes(fid, len(points3D), "Q")
+        for _, pt in points3D.items():
+            write_next_bytes(fid, pt.id, "Q")
+            write_next_bytes(fid, pt.xyz.tolist(), "ddd")
+            write_next_bytes(fid, pt.rgb.tolist(), "BBB")
+            write_next_bytes(fid, pt.error, "d")
+            track_length = pt.image_ids.shape[0]
+            write_next_bytes(fid, track_length, "Q")
+            for image_id, point2D_id in zip(pt.image_ids, pt.point2D_idxs):
+                write_next_bytes(fid, [image_id, point2D_id], "ii")
+
+
+def detect_model_format(path, ext):
+    if (
+        os.path.isfile(os.path.join(path, "cameras" + ext))
+        and os.path.isfile(os.path.join(path, "images" + ext))
+        and os.path.isfile(os.path.join(path, "points3D" + ext))
+    ):
+        print("Detected model format: '" + ext + "'")
+        return True
+
+    return False
+
+
+def read_model(path, ext=""):
+    # try to detect the extension automatically
+    if ext == "":
+        if detect_model_format(path, ".bin"):
+            ext = ".bin"
+        elif detect_model_format(path, ".txt"):
+            ext = ".txt"
+        else:
+            print("Provide model format: '.bin' or '.txt'")
+            return
+
+    if ext == ".txt":
+        cameras = read_cameras_text(os.path.join(path, "cameras" + ext))
+        images = read_images_text(os.path.join(path, "images" + ext))
+        points3D = read_points3D_text(os.path.join(path, "points3D") + ext)
+    else:
+        cameras = read_cameras_binary(os.path.join(path, "cameras" + ext))
+        images = read_images_binary(os.path.join(path, "images" + ext))
+        points3D = read_points3D_binary(os.path.join(path, "points3D") + ext)
+    return cameras, images, points3D
+
+
+def write_model(cameras, images, points3D, path, ext=".bin"):
+    if ext == ".txt":
+        write_cameras_text(cameras, os.path.join(path, "cameras" + ext))
+        write_images_text(images, os.path.join(path, "images" + ext))
+        write_points3D_text(points3D, os.path.join(path, "points3D") + ext)
+    else:
+        write_cameras_binary(cameras, os.path.join(path, "cameras" + ext))
+        write_images_binary(images, os.path.join(path, "images" + ext))
+        write_points3D_binary(points3D, os.path.join(path, "points3D") + ext)
+    return cameras, images, points3D
+
+
+def qvec2rotmat(qvec):
+    return np.array(
+        [
+            [
+                1 - 2 * qvec[2] ** 2 - 2 * qvec[3] ** 2,
+                2 * qvec[1] * qvec[2] - 2 * qvec[0] * qvec[3],
+                2 * qvec[3] * qvec[1] + 2 * qvec[0] * qvec[2],
+            ],
+            [
+                2 * qvec[1] * qvec[2] + 2 * qvec[0] * qvec[3],
+                1 - 2 * qvec[1] ** 2 - 2 * qvec[3] ** 2,
+                2 * qvec[2] * qvec[3] - 2 * qvec[0] * qvec[1],
+            ],
+            [
+                2 * qvec[3] * qvec[1] - 2 * qvec[0] * qvec[2],
+                2 * qvec[2] * qvec[3] + 2 * qvec[0] * qvec[1],
+                1 - 2 * qvec[1] ** 2 - 2 * qvec[2] ** 2,
+            ],
+        ]
+    )
+
+
+def rotmat2qvec(R):
+    Rxx, Ryx, Rzx, Rxy, Ryy, Rzy, Rxz, Ryz, Rzz = R.flat
+    K = (
+        np.array(
+            [
+                [Rxx - Ryy - Rzz, 0, 0, 0],
+                [Ryx + Rxy, Ryy - Rxx - Rzz, 0, 0],
+                [Rzx + Rxz, Rzy + Ryz, Rzz - Rxx - Ryy, 0],
+                [Ryz - Rzy, Rzx - Rxz, Rxy - Ryx, Rxx + Ryy + Rzz],
+            ]
+        )
+        / 3.0
+    )
+    eigvals, eigvecs = np.linalg.eigh(K)
+    qvec = eigvecs[[3, 0, 1, 2], np.argmax(eigvals)]
+    if qvec[0] < 0:
+        qvec *= -1
+    return qvec
+
+
+# -------------------------------------------------------------------------
+# New: CLIP-based filtering helpers
+# -------------------------------------------------------------------------
+
+DEFAULT_POSITIVE_PROMPT = "a woman with buzz cut hairstyle"
+DEFAULT_NEGATIVE_PROMPT = "a woman with long hair in a ponytail"
+DEFAULT_THRESHOLD = 0.02  # threshold on ratio (score_p - score_n) / score_p
+DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+
+
+def copy_scene_dir(src, dst):
+    """
+    Copy the entire scene directory once.
+    This is where new files/dirs are created (the cloned scene).
+    """
+    # if os.path.exists(dst):
+    #     raise RuntimeError(f"Destination dir already exists: {dst}")
+    shutil.copytree(src, dst, dirs_exist_ok=True)
+    print(f"Copied scene from {src} -> {dst}")
+
+
+def load_clip_model(device=DEVICE):
+    model, preprocess = clip.load("ViT-B/32", device=device)
+    model.eval()
+    return model, preprocess
+
+
+def compute_text_features(model, text_prompt, device=DEVICE):
+    with torch.no_grad():
+        text_tokens = clip.tokenize([text_prompt]).to(device)
+        text_features = model.encode_text(text_tokens)
+        text_features = text_features / text_features.norm(dim=-1, keepdim=True)
+    return text_features
+
+
+def compute_image_text_similarity(model, preprocess, text_features, image_path, device=DEVICE):
+    image = PILImage.open(image_path).convert("RGB")
+    with torch.no_grad():
+        image_input = preprocess(image).unsqueeze(0).to(device)
+        image_features = model.encode_image(image_input)
+        image_features = image_features / image_features.norm(dim=-1, keepdim=True)
+        similarity = (image_features @ text_features.T).squeeze().item()
+    return similarity
+
+
+# def filter_scene_with_clip(scene_dir, positive_prompt, negative_prompt, threshold):
+#     """
+#     Work IN-PLACE on scene_dir (which should already be a copy):
+#     - score each image with CLIP against positive & negative prompts
+#     - compute ratio = (score_p - score_n) / score_p
+#     - delete images with ratio < threshold (image files on disk)
+#     - overwrite sparse/0/images.bin and sparse/0/cameras.bin accordingly
+#     - save a histogram of ratios as clip_ratio_hist.png in scene_dir
+#     """
+#     images_dir = os.path.join(scene_dir, "images")
+#     sparse0_dir = os.path.join(scene_dir, "sparse", "0")
+
+#     images_bin_path = os.path.join(sparse0_dir, "images.bin")
+#     cameras_bin_path = os.path.join(sparse0_dir, "cameras.bin")
+
+#     if not os.path.isdir(images_dir):
+#         raise RuntimeError(f"Images directory not found: {images_dir}")
+#     if not os.path.exists(images_bin_path) or not os.path.exists(cameras_bin_path):
+#         raise RuntimeError(f"COLMAP binary model not found in {sparse0_dir}")
+
+#     # Load COLMAP model
+#     cameras = read_cameras_binary(cameras_bin_path)
+#     images = read_images_binary(images_bin_path)
+
+#     print(f"Loaded {len(images)} images and {len(cameras)} cameras from COLMAP model.")
+
+#     # Load CLIP
+#     model, preprocess = load_clip_model()
+#     with torch.no_grad():
+#         text_tokens = clip.tokenize([positive_prompt, negative_prompt]).to(DEVICE)
+#         text_features = model.encode_text(text_tokens)
+#         text_features = text_features / text_features.norm(dim=-1, keepdim=True)
+#         # text_features[0] -> positive, text_features[1] -> negative
+
+#     kept_images = {}
+#     dropped_image_ids = set()
+#     all_ratios = []  # for distribution plot
+
+#     for image_id, img in images.items():
+#         image_rel_name = img.name
+
+#         # Typical COLMAP setup: images are under scene_dir/images
+#         candidate_paths = [
+#             os.path.join(images_dir, image_rel_name),
+#             os.path.join(scene_dir, image_rel_name),  # fallback
+#         ]
+
+#         image_path = None
+#         for p in candidate_paths:
+#             if os.path.exists(p):
+#                 image_path = p
+#                 break
+
+#         if image_path is None:
+#             print(f"[WARN] File for COLMAP image '{image_rel_name}' not found, dropping it.")
+#             dropped_image_ids.add(image_id)
+#             continue
+
+#         try:
+#             image = PILImage.open(image_path).convert("RGB")
+#             with torch.no_grad():
+#                 image_input = preprocess(image).unsqueeze(0).to(DEVICE)
+#                 image_features = model.encode_image(image_input)
+#                 image_features = image_features / image_features.norm(dim=-1, keepdim=True)
+#                 sims = (image_features @ text_features.T).squeeze(0).tolist()
+#         except Exception as e:
+#             print(f"[WARN] Failed to score image '{image_rel_name}': {e}. Dropping it.")
+#             dropped_image_ids.add(image_id)
+#             continue
+
+#         score_p = float(sims[0])
+#         score_n = float(sims[1])
+
+#         # Avoid division by zero: if |score_p| is too small, set ratio to 0
+#         if abs(score_p) < 1e-8:
+#             ratio = 0.0
+#         else:
+#             ratio = (score_p - score_n) / score_p
+
+#         all_ratios.append(ratio)
+
+#         if ratio >= threshold and score_p>0.25:
+#             kept_images[image_id] = img
+#             status = "KEEP"
+#         else:
+#             dropped_image_ids.add(image_id)
+#             status = "DROP"
+
+#         print(
+#             f"{status:4s} id={image_id:4d}  "
+#             f"score_p={score_p:.4f}  score_n={score_n:.4f}  "
+#             f"ratio=(p-n)/p={ratio:.4f}  name={image_rel_name}"
+#         )
+
+#     # Delete dropped image files from disk
+#     for image_id in dropped_image_ids:
+#         img = images[image_id]
+#         image_rel_name = img.name
+#         for p in [
+#             os.path.join(images_dir, image_rel_name),
+#             os.path.join(scene_dir, image_rel_name),
+#         ]:
+#             if os.path.exists(p):
+#                 try:
+#                     os.remove(p)
+#                     print(f"Deleted image file: {p}")
+#                 except Exception as e:
+#                     print(f"[WARN] Failed to delete {p}: {e}")
+
+#     # Filter cameras to keep only ones used by remaining images
+#     used_camera_ids = {img.camera_id for img in kept_images.values()}
+#     cameras_filtered = {cid: cam for cid, cam in cameras.items() if cid in used_camera_ids}
+
+#     print("\nAfter filtering:")
+#     print(f"  kept images   : {len(kept_images)}")
+#     print(f"  dropped images: {len(dropped_image_ids)}")
+#     print(f"  kept cameras  : {len(cameras_filtered)} (only those used by kept images)")
+
+#     # Overwrite COLMAP binary model files IN PLACE (no new filenames)
+#     write_images_binary(kept_images, images_bin_path)
+#     write_cameras_binary(cameras_filtered, cameras_bin_path)
+#     print("\nOverwrote COLMAP files:")
+#     print(f"  {images_bin_path}")
+#     print(f"  {cameras_bin_path}")
+
+#     # Plot distribution of ratios
+#     if len(all_ratios) > 0:
+#         plt.figure()
+#         plt.hist(all_ratios, bins=50)
+#         plt.xlabel("(score_p - score_n) / score_p")
+#         plt.ylabel("Count")
+#         plt.title("CLIP preference ratio distribution")
+#         hist_path = os.path.join(scene_dir, "clip_ratio_hist.png")
+#         plt.savefig(hist_path, dpi=150, bbox_inches="tight")
+#         plt.close()
+#         print(f"\nSaved ratio distribution histogram to {hist_path}")
+#     else:
+#         print("\nNo valid ratios to plot histogram.")
+def filter_scene_with_clip(scene_dir, positive_prompt, negative_prompt, threshold):
+    """
+    Work IN-PLACE on scene_dir (which should already be a copy):
+    - score each image with CLIP against positive & negative prompts
+    - compute ratio = (score_p - score_n) / score_p = 1 - score_n / score_p
+    - interpret threshold as a FRACTION of images to delete:
+        e.g. threshold = 0.3 -> drop the 30% of CLIP-scored images
+        with the lowest ratio (1 - p_neg / p_pos), breaking ties
+        by the lowest positive CLIP score.
+    - delete those images from disk
+    - overwrite sparse/0/images.bin and sparse/0/cameras.bin accordingly
+    - save a histogram of ratios as clip_ratio_hist.png in scene_dir
+    """
+    images_dir = os.path.join(scene_dir, "images")
+    sparse0_dir = os.path.join(scene_dir, "sparse", "0")
+
+    images_bin_path = os.path.join(sparse0_dir, "images.bin")
+    cameras_bin_path = os.path.join(sparse0_dir, "cameras.bin")
+
+    if not os.path.isdir(images_dir):
+        raise RuntimeError(f"Images directory not found: {images_dir}")
+    if not os.path.exists(images_bin_path) or not os.path.exists(cameras_bin_path):
+        raise RuntimeError(f"COLMAP binary model not found in {sparse0_dir}")
+
+    # Load COLMAP model
+    cameras = read_cameras_binary(cameras_bin_path)
+    images = read_images_binary(images_bin_path)
+
+    print(f"Loaded {len(images)} images and {len(cameras)} cameras from COLMAP model.")
+
+    # Load CLIP
+    model, preprocess = load_clip_model()
+    with torch.no_grad():
+        text_tokens = clip.tokenize([positive_prompt, negative_prompt]).to(DEVICE)
+        text_features = model.encode_text(text_tokens)
+        text_features = text_features / text_features.norm(dim=-1, keepdim=True)
+        # text_features[0] -> positive, text_features[1] -> negative
+
+    kept_images = {}
+    dropped_image_ids = set()
+    all_ratios = []  # for distribution plot
+
+    # Store metrics for valid images so we can rank globally
+    image_metrics = {}  # image_id -> dict(ratio, score_p, score_n, name, img)
+
+    for image_id, img in images.items():
+        image_rel_name = img.name
+
+        # Typical COLMAP setup: images are under scene_dir/images
+        candidate_paths = [
+            os.path.join(images_dir, image_rel_name),
+            os.path.join(scene_dir, image_rel_name),  # fallback
+        ]
+
+        image_path = None
+        for p in candidate_paths:
+            if os.path.exists(p):
+                image_path = p
+                break
+
+        if image_path is None:
+            print(f"[WARN] File for COLMAP image '{image_rel_name}' not found, dropping it.")
+            dropped_image_ids.add(image_id)
+            continue
+
+        try:
+            image = PILImage.open(image_path).convert("RGB")
+            with torch.no_grad():
+                image_input = preprocess(image).unsqueeze(0).to(DEVICE)
+                image_features = model.encode_image(image_input)
+                image_features = image_features / image_features.norm(dim=-1, keepdim=True)
+                sims = (image_features @ text_features.T).squeeze(0).tolist()
+        except Exception as e:
+            print(f"[WARN] Failed to score image '{image_rel_name}': {e}. Dropping it.")
+            dropped_image_ids.add(image_id)
+            continue
+
+        score_p = float(sims[0])
+        score_n = float(sims[1])
+
+        # Avoid division by zero: if |score_p| is too small, set ratio to 0
+        if abs(score_p) < 1e-8:
+            ratio = 0.0
+        else:
+            # ratio = 1 - score_n / score_p  ==  (score_p - score_n) / score_p
+            ratio = (score_p - score_n) / score_p
+
+        all_ratios.append(ratio)
+        image_metrics[image_id] = {
+            "img": img,
+            "name": image_rel_name,
+            "ratio": ratio,
+            "score_p": score_p,
+            "score_n": score_n,
+        }
+
+    # If no valid CLIP-scored images, nothing more to filter
+    if len(image_metrics) == 0:
+        print("\nNo valid images scored with CLIP; only dropped those with I/O errors.")
+    else:
+        # Clamp threshold to [0, 1] and interpret as fraction of images to delete
+        frac = max(0.0, min(1.0, float(threshold)))
+        num_valid = len(image_metrics)
+        num_to_drop = int(num_valid * frac + 1e-6)  # floor
+
+        actual_frac = (num_to_drop / num_valid) if num_valid > 0 else 0.0
+        print(
+            f"\nCLIP ranking: threshold={threshold:.3f} -> "
+            f"drop {num_to_drop}/{num_valid} ({actual_frac:.3f}) of CLIP-scored images "
+            "with the lowest (1 - p_neg/p_pos), breaking ties with lowest p_pos."
+        )
+
+        # Sort by (ratio ascending, score_p ascending).
+        # => Lowest (1 - p_neg/p_pos) first, and among those, lowest clip score first.
+        sorted_ids = sorted(
+            image_metrics.keys(),
+            key=lambda i: (image_metrics[i]["ratio"], image_metrics[i]["score_p"])
+        )
+
+        to_drop_by_rank = set(sorted_ids[:num_to_drop])
+
+        # Classify valid images as KEEP/DROP according to ranking
+        for image_id, info in image_metrics.items():
+            if image_id in to_drop_by_rank:
+                dropped_image_ids.add(image_id)
+                status = "DROP"
+            else:
+                kept_images[image_id] = info["img"]
+                status = "KEEP"
+
+            print(
+                f"{status:4s} id={image_id:4d}  "
+                f"score_p={info['score_p']:.4f}  score_n={info['score_n']:.4f}  "
+                f"ratio=(p-n)/p={info['ratio']:.4f}  name={info['name']}"
+            )
+
+    # Delete dropped image files from disk
+    for image_id in dropped_image_ids:
+        if image_id not in images:
+            continue
+        img = images[image_id]
+        image_rel_name = img.name
+        for p in [
+            os.path.join(images_dir, image_rel_name),
+            os.path.join(scene_dir, image_rel_name),
+        ]:
+            if os.path.exists(p):
+                try:
+                    os.remove(p)
+                    print(f"Deleted image file: {p}")
+                except Exception as e:
+                    print(f"[WARN] Failed to delete {p}: {e}")
+
+    # Filter cameras to keep only ones used by remaining images
+    used_camera_ids = {img.camera_id for img in kept_images.values()}
+    cameras_filtered = {cid: cam for cid, cam in cameras.items() if cid in used_camera_ids}
+
+    print("\nAfter filtering:")
+    print(f"  kept images   : {len(kept_images)}")
+    print(f"  dropped images: {len(dropped_image_ids)}")
+    print(f"  kept cameras  : {len(cameras_filtered)} (only those used by kept images)")
+
+    # Overwrite COLMAP binary model files IN PLACE (no new filenames)
+    write_images_binary(kept_images, images_bin_path)
+    write_cameras_binary(cameras_filtered, cameras_bin_path)
+    print("\nOverwrote COLMAP files:")
+    print(f"  {images_bin_path}")
+    print(f"  {cameras_bin_path}")
+
+    # Plot distribution of ratios
+    if len(all_ratios) > 0:
+        plt.figure()
+        plt.hist(all_ratios, bins=50)
+        plt.xlabel("(score_p - score_n) / score_p  =  1 - score_n / score_p")
+        plt.ylabel("Count")
+        plt.title("CLIP preference ratio distribution")
+        hist_path = os.path.join(scene_dir, "clip_ratio_hist.png")
+        plt.savefig(hist_path, dpi=150, bbox_inches="tight")
+        plt.close()
+        print(f"\nSaved ratio distribution histogram to {hist_path}")
+    else:
+        print("\nNo valid ratios to plot histogram.")
+
+
+# -------------------------------------------------------------------------
+# CLI wrappers
+# -------------------------------------------------------------------------
+
+def convert_model_cmd(args):
+    """Original read/write conversion functionality."""
+    cameras, images, points3D = read_model(
+        path=args.input_model, ext=args.input_format
+    )
+
+    print("num_cameras:", len(cameras))
+    print("num_images:", len(images))
+    print("num_points3D:", len(points3D))
+
+    if args.output_model is not None:
+        write_model(
+            cameras,
+            images,
+            points3D,
+            path=args.output_model,
+            ext=args.output_format,
+        )
+
+
+def clip_filter_cmd(args):
+    """Copy scene and run CLIP-based image filtering with positive/negative prompts."""
+    copy_scene_dir(args.src_scene, args.dst_scene)
+    filter_scene_with_clip(
+        scene_dir=args.dst_scene,
+        positive_prompt=args.positive_prompt,
+        negative_prompt=args.negative_prompt,
+        threshold=args.threshold,
+    )
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="COLMAP model utilities and CLIP-based image filtering"
+    )
+    subparsers = parser.add_subparsers(dest="command")
+
+    # --- Subcommand: convert (original behavior) ---
+    parser_convert = subparsers.add_parser(
+        "convert", help="Read and write COLMAP binary/text models"
+    )
+    parser_convert.add_argument("--input_model", help="path to input model folder")
+    parser_convert.add_argument(
+        "--input_format",
+        choices=[".bin", ".txt"],
+        help="input model format",
+        default="",
+    )
+    parser_convert.add_argument("--output_model", help="path to output model folder")
+    parser_convert.add_argument(
+        "--output_format",
+        choices=[".bin", ".txt"],
+        help="output model format",
+        default=".txt",
+    )
+    parser_convert.set_defaults(func=convert_model_cmd)
+
+    # --- Subcommand: clip_filter (new dual-prompt behavior) ---
+    parser_clip = subparsers.add_parser(
+        "clip_filter",
+        help=(
+            "Copy a COLMAP scene dir, then filter images in sparse/0/ "
+            "with CLIP using positive/negative text prompts; delete images with "
+            "low (score_p-score_n)/score_p and overwrite cameras.bin/images.bin "
+            "in the copy. Also saves a histogram of the ratio."
+        ),
+    )
+    parser_clip.add_argument(
+        "--src_scene",
+        required=True,
+        help="Path to original scene dir (contains images/ and sparse/0/)",
+    )
+    parser_clip.add_argument(
+        "--dst_scene",
+        required=True,
+        help="Path to destination scene dir (will be created by copying src_scene)",
+    )
+    parser_clip.add_argument(
+        "--positive_prompt",
+        default=DEFAULT_POSITIVE_PROMPT,
+        help=f'Positive text prompt for CLIP (default: "{DEFAULT_POSITIVE_PROMPT}")',
+    )
+    parser_clip.add_argument(
+        "--negative_prompt",
+        default=DEFAULT_NEGATIVE_PROMPT,
+        help=f'Negative text prompt for CLIP (default: "{DEFAULT_NEGATIVE_PROMPT}")',
+    )
+    parser_clip.add_argument(
+        "--threshold",
+        type=float,
+        default=DEFAULT_THRESHOLD,
+        help=(
+            "Keep images with ratio = (score_p - score_n) / score_p "
+            f">= this value (default: {DEFAULT_THRESHOLD})"
+        ),
+    )
+    parser_clip.set_defaults(func=clip_filter_cmd)
+
+    args = parser.parse_args()
+    if not hasattr(args, "func"):
+        parser.print_help()
+        return
+    args.func(args)
+
+
+if __name__ == "__main__":
+    main()

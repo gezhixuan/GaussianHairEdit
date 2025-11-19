@@ -1,13 +1,13 @@
 # ID="Someone"
 # export USER
-ID="Zhixuan"
-# ID="Liza_new"
+# ID="Zhixuan"
+ID="Liza_new"
 
 rm -rf "./debug_$ID"
 
 python launch.py --config configs/edit-inf.yaml \
 --train \
---gpu 0 \
+--gpu 4 \
 system.max_densify_percent=0.01 \
 system.anchor_weight_init_g0=0.05 \
 system.anchor_weight_init=0.1 \
@@ -23,8 +23,8 @@ system.densification_interval=100 \
 data.source=gs_data/$ID \
 system.gs_source=gs_data/$ID/3d_gaussian_splatting/point_cloud/iteration_30000/point_cloud.ply \
 system.guidance.src_prompt="hair" \
-system.guidance.tgt_prompt="long natural curls" \
-system.prompt_processor.prompt="long natural curls" \
+system.guidance.tgt_prompt="buzz cut" \
+system.prompt_processor.prompt="buzz cut" \
 system.guidance.self_attn_th=0.8 \
 system.guidance.cross_attn_th=0.6 \
 system.guidance.src_blend_th=0.4 \
@@ -33,3 +33,5 @@ trainer.max_steps=2000 \
 system.per_editing_step=400
 
 #system.gs_source=gs_data/trained_gs_models/face/point_cloud.ply \
+# system.guidance.tgt_prompt="long natural curls" \
+# system.prompt_processor.prompt="long natural curls" \

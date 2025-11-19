@@ -14,8 +14,8 @@ import numpy as np
 
 # debug_root = "./debug_Someone"
 # debug_root = "./debug_ZhixuanV3.0"
-debug_root = "./debug_Zhixuan"
-# debug_root = "./debug_Liza_new"
+# debug_root = "./debug_Zhixuan"
+debug_root = "./debug_Liza_new"
 
 
 @threestudio.register("gsedit-system-edit")

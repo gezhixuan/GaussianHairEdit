@@ -221,3 +221,5 @@ ext/hyperIQA/pretrained/
 edit_cache/
 .threestudio_cache/
 gs_data/
+InstantSplat/
+*.log

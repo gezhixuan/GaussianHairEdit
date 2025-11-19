@@ -13,7 +13,9 @@
 # ID="Liza_aligned_clip0.3"
 # ID="Liza_gemeni_resized"
 # ID="Liza_aligned_clip0.24"
-ID="Liza_aligned_clip0.28"
+# ID="Liza_aligned_clip0.28"
+# ID="AAAFinal_results/Liza_aligned_gemini"
+ID="AAAFinal_results/Liza_aligned_clip0.28"
 
 
 export PROJECT_DIR="/scratch/hl106/zx_workspace/cto/VcEdit"

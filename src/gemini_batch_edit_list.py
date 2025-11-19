@@ -8,63 +8,19 @@ from google.genai import types
 from PIL import Image
 from tqdm import tqdm
 
+# Set this to a list of filenames to restrict editing, e.g.:
 # selected_list = [
-#     "000050.png",
-#     "000153.png",
-#     "000174.png",
-#     "000182.png",
-#     "000212.png",
-#     "000234.png",
-#     "000271.png",
 #     "000280.png",
-#     "000282.png",
-#     "000298.png",
-#     "000354.png",
-#     "000365.png",
 #     "000392.png",
 #     "000400.png",
-#     "000414.png",
-#     "000427.png",
-#     "000446.png",
-#     "000453.png",
 #     "000465.png",
-#     "000473.png",
-#     "000482.png",
-#     "000485.png",
-#     "000492.png",
 #     "000506.png",
 #     "000513.png",
 #     "000538.png",
 # ]
-
-selected_list = [
-#     "000050.png",
-#     "000153.png",
-#     "000174.png",
-#     "000182.png",
-#     "000212.png",
-    "000234.png",
-#     "000271.png",
-#     "000280.png",
-#     "000282.png",
-#     "000298.png",
-#     "000354.png",
-#     "000365.png",
-#     "000392.png",
-#     "000400.png",
-#     "000414.png",
-#     "000427.png",
-#     "000446.png",
-#     "000453.png",
-#     "000465.png",
-#     "000473.png",
-#     "000482.png",
-#     "000485.png",
-#     "000492.png",
-#     "000506.png",
-#     "000513.png",
-#     "000538.png",
-]
+#
+# If selected_list is None, ALL images in the directory will be edited.
+selected_list = None
 
 
 def parse_args():
@@ -98,9 +54,16 @@ def parse_args():
     parser.add_argument(
         "--model",
         type=str,
-        # default="gemini-2.5-flash-image",
-        default="gemini-2.5-pro",
+        default="gemini-2.5-flash-image",
+        # default="gemini-2.5-pro",
         help="Gemini image model name.",
+    )
+    parser.add_argument(
+        "--prompt",
+        type=str,
+        default="buzz with no braids",
+        help='Hairstyle description to apply, e.g. "long natural curls". '
+             'Default: "buzz with no braids".',
     )
     return parser.parse_args()
 
@@ -115,18 +78,11 @@ def main():
 
     client = genai.Client(api_key=args.api_key)
 
-    # Your edit instruction – same for all frames
-    # text_input = (
-    #     "Using the provided image, please change the hairstyle to buzz cut."
-    # )
-    
-    # text_input = (
-    #     "Using the provided image, please change the hairstyle to long natural curls"
-    # )
-    
+    # Build the instruction from the prompt
     text_input = (
-        "remove the braids"
+        f"Using the provided image, please change the hairstyle to {args.prompt}."
     )
+    print(text_input)
 
     pattern = os.path.join(args.image_dir, f"*.{args.ext}")
     image_paths = sorted(glob(pattern))
@@ -143,8 +99,12 @@ def main():
     )
 
     for img_path in tqdm(to_process, desc="Editing images", unit="img"):
-        if img_path.split('/')[-1] not in selected_list:
+        filename = os.path.basename(img_path)
+
+        # If selected_list is not None, only process the ones in the list.
+        if selected_list is not None and filename not in selected_list:
             continue
+
         try:
             # Open the original image
             image_input = Image.open(img_path)

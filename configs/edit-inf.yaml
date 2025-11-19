@@ -31,8 +31,8 @@ system:
   prompt_processor:
     pretrained_model_name_or_path: "runwayml/stable-diffusion-v1-5"
     prompt: ''
-  # preserve_face: true
-  preserve_face: false
+  preserve_face: true
+  # preserve_face: false
   face_seg_prompt: "face"
   # face_seg_prompt: "skin"
   # hair_seg_prompt: "hair"

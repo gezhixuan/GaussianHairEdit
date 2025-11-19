@@ -1,0 +1,27 @@
+name: SparseGS
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+dependencies:
+  - cudatoolkit=11.8
+  - plyfile=0.8.1
+  - python=3.10
+  - pip
+  - pytorch==2.0.0
+  - torchaudio==2.0.0 
+  - torchvision==0.15.0
+  - tqdm
+  - pip:
+    - submodules/diff-gaussian-rasterization-softmax
+    - submodules/simple-knn
+    - opencv-python
+    - diptest==0.6.1
+    - transformers
+    - diffusers
+    - torchmetrics
+    - matplotlib
+    - scipy
+    - plyfile
+    - recordclass
+    - scikit-image

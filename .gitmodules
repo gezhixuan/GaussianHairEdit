@@ -1,0 +1,3 @@
+[submodule "ext/Stable-Hair"]
+	path = ext/Stable-Hair
+	url = https://github.com/Xiaojiu-z/Stable-Hair.git

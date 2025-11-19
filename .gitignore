@@ -229,4 +229,4 @@ script_copy/
 # ./ext/Stable-Hair/diffusers
 ./ext/Stable-Hair
 *.csv
-*.out
+*.outscript_copy/

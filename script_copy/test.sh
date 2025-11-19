@@ -26,6 +26,7 @@ ID="Liza_aligned_clip0.3"
 ID="AAAFinal_results/Liza_new_buzz cut"
 
 # ID="Liza_gemeni_buzzcut_clip0.28"
+ID="AAAFinal_results/Liza_new_buzz cut_registered"
 
 
 export PROJECT_DIR="/scratch/hl106/zx_workspace/cto/VcEdit"
@@ -70,29 +71,30 @@ eval "$(conda shell.bash hook)"
 #       --model_path "$DATA_PATH/SparseGS_no_black"
 # rm "$DATA_PATH/SparseGS/cfg_args"
 
-# conda deactivate && conda activate vanilla_gaussian_splatting
-# CUDA_VISIBLE_DEVICES="$GPU" python gaussian-splatting/render.py  \
-#       --model_path "$DATA_PATH/3d_gaussian_splatting"
-
-# conda deactivate && conda activate vanilla_gaussian_splatting
-# CUDA_VISIBLE_DEVICES="$GPU" python gaussian-splatting/render.py  \
-#       --iteration  7000 \
-#       --model_path "$DATA_PATH/3d_gaussian_splatting"
-
 cd "$PROJECT_DIR"
-cp -r "$DATA_PATH/3d_gaussian_splatting/cfg_args" "$DATA_PATH/SparseGS_warp"
 conda deactivate && conda activate vanilla_gaussian_splatting
-CUDA_VISIBLE_DEVICES="$GPU" python gaussian-splatting/render.py -s "$DATA_PATH"  \
-      --model_path "$DATA_PATH/SparseGS_warp"
-CUDA_VISIBLE_DEVICES="$GPU" python gaussian-splatting/render.py -s "$DATA_PATH"  \
-      --model_path "$DATA_PATH/SparseGS_warp" --iteration 7000
+CUDA_VISIBLE_DEVICES="$GPU" python gaussian-splatting/render.py -s  "$DATA_PATH" \
+      --model_path "$DATA_PATH/3d_gaussian_splatting"
 
-ID="AAAFinal_results/Liza_new_buzz cut_registered"
-export DATA_PATH="$PROJECT_DIR/gs_data/$ID"
-cd "$PROJECT_DIR"
-cp -r "$DATA_PATH/3d_gaussian_splatting/cfg_args" "$DATA_PATH/SparseGS"
 conda deactivate && conda activate vanilla_gaussian_splatting
-CUDA_VISIBLE_DEVICES="$GPU" python gaussian-splatting/render.py -s "$DATA_PATH"  \
-      --model_path "$DATA_PATH/SparseGS"
-CUDA_VISIBLE_DEVICES="$GPU" python gaussian-splatting/render.py -s "$DATA_PATH"  \
-      --model_path "$DATA_PATH/SparseGS" --iteration 7000
+CUDA_VISIBLE_DEVICES="$GPU" python gaussian-splatting/render.py -s  "$DATA_PATH" \
+      --iteration  7000 \
+      --model_path "$DATA_PATH/3d_gaussian_splatting"
+
+# cd "$PROJECT_DIR"
+# cp -r "$DATA_PATH/3d_gaussian_splatting/cfg_args" "$DATA_PATH/SparseGS_warp"
+# conda deactivate && conda activate vanilla_gaussian_splatting
+# CUDA_VISIBLE_DEVICES="$GPU" python gaussian-splatting/render.py -s "$DATA_PATH"  \
+#       --model_path "$DATA_PATH/SparseGS_warp"
+# CUDA_VISIBLE_DEVICES="$GPU" python gaussian-splatting/render.py -s "$DATA_PATH"  \
+#       --model_path "$DATA_PATH/SparseGS_warp" --iteration 7000
+
+# ID="AAAFinal_results/Liza_new_buzz cut_registered"
+# export DATA_PATH="$PROJECT_DIR/gs_data/$ID"
+# cd "$PROJECT_DIR"
+# cp -r "$DATA_PATH/3d_gaussian_splatting/cfg_args" "$DATA_PATH/SparseGS"
+# conda deactivate && conda activate vanilla_gaussian_splatting
+# CUDA_VISIBLE_DEVICES="$GPU" python gaussian-splatting/render.py -s "$DATA_PATH"  \
+#       --model_path "$DATA_PATH/SparseGS"
+# CUDA_VISIBLE_DEVICES="$GPU" python gaussian-splatting/render.py -s "$DATA_PATH"  \
+#       --model_path "$DATA_PATH/SparseGS" --iteration 7000

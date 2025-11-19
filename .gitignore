@@ -223,3 +223,5 @@ edit_cache/
 gs_data/
 InstantSplat/
 *.log
+
+./script_copy

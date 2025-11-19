@@ -215,7 +215,7 @@ debug_Liza_new/
 debug_Someone/
 debug_Someone2/
 
-
+gaussian-splatting/
 gaussian-splatting/submodules/
 ext/hyperIQA/pretrained/
 edit_cache/
@@ -224,7 +224,7 @@ gs_data/
 InstantSplat/
 *.log
 
-./script_copy
+script_copy/
 # ./ext/Stable-Hair/models
 # ./ext/Stable-Hair/diffusers
 ./ext/Stable-Hair

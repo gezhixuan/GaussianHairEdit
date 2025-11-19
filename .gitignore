@@ -225,3 +225,6 @@ InstantSplat/
 *.log
 
 ./script_copy
+# ./ext/Stable-Hair/models
+# ./ext/Stable-Hair/diffusers
+./ext/Stable-Hair

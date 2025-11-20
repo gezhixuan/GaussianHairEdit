@@ -71,7 +71,6 @@ To use your own monocular video as input, follow these steps:
 
 After this, the preprocessed data and reconstructed Gaussian scene will be available under `gs_data/$id` for further editing.
 
-````markdown
 ## Start Editing
 
 We provide five end-to-end pipelines corresponding to the setups described in our paper. Each pipeline is wrapped in a shell script under `script/`. All scripts assume you have:

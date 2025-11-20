@@ -1,4 +1,4 @@
-# Hairstyle Modifaction using 3D gaussians
+# Geometry aware hairstyle modification via sparse Gaussian splatting
 
 Zhixuan Ge, Liza Jivnani
 
@@ -130,21 +130,6 @@ Each script can be customized (e.g., scene ID, paths, prompt, number of iteratio
 
 
 
-## Citation
-
-If you find our work helps, please cite our paper:
-```
-@inproceedings{wang2025view,
-  title={View-consistent 3d editing with gaussian splatting},
-  author={Wang, Yuxuan and Yi, Xuanyu and Wu, Zike and Zhao, Na and Chen, Long and Zhang, Hanwang},
-  booktitle={European Conference on Computer Vision},
-  pages={404--420},
-  year={2025},
-  organization={Springer}
-}
-```
-
-<br/>
 
 ## Acknowledgement
 Our code is based on these wonderful repos:
@@ -153,4 +138,5 @@ Our code is based on these wonderful repos:
 * [Gaussian Editor](https://github.com/buaacyw/GaussianEditor)
 * [Threestudio](https://github.com/threestudio-project/threestudio)
 * [InstructNerf2Nerf](https://github.com/ayaanzhaque/instruct-nerf2nerf)
+* [SparseGS](https://github.com/ForMyCat/SparseGS.git)
 

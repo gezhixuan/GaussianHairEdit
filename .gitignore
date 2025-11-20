@@ -230,3 +230,4 @@ script_copy/
 ./ext/Stable-Hair
 *.csv
 *.outscript_copy/
+./ext/face-parsing.PyTorch/

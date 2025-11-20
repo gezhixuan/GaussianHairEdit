@@ -128,10 +128,6 @@ bash script/pipeline5_llmguided_sparseGS_warp.sh
 
 Each script can be customized (e.g., scene ID, paths, prompt, number of iterations) by editing the corresponding `script/pipeline*.sh` file. For deeper technical details, limitations, and comparisons between these pipelines, please refer to the accompanying paper.
 
-```
-
-The brief descriptions of Pipelines 1–5 above follow the definitions and analysis in your report on hairstyle modification with 3D Gaussians. :contentReference[oaicite:0]{index=0}
-```
 
 
 ## Citation

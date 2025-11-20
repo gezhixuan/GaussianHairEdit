@@ -1,4 +1,4 @@
-# Geometry aware hairstyle modification via sparse Gaussian splatting
+# Geometry aware 3D hairstyle modification via sparse Gaussian splatting
 
 Zhixuan Ge, Liza Jivnani
 

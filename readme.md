@@ -1,8 +1,5 @@
 # Hairstyle Modifaction using 3D gaussians
 
-<!-- <a href='https://vcedit.github.io'><img src='https://img.shields.io/badge/Project-Page-blue'></a>
-<a href='https://arxiv.org/abs/2403.11868'><img src='https://img.shields.io/badge/arXiv-2403.11868-b31b1b.svg'></a>   -->
-
 Zhixuan Ge, Liza Jivnani
 
 <p align="center" >
@@ -12,7 +9,6 @@ Zhixuan Ge, Liza Jivnani
 
 <br/>
 
-```markdown
 ## Installation
 
 ```bash
@@ -20,44 +16,49 @@ Zhixuan Ge, Liza Jivnani
 git clone https://github.com/gezhixuan/GaussianHairEdit.git
 cd VcEdit
 
-# build environment for VcEdit
+#############################
+# 1. Environment: vcedit
+#############################
 conda create -n vcedit python=3.8 -y
 conda activate vcedit
 
 # Our version is based on CUDA 11.8, see https://pytorch.org/get-started/locally/ to install other PyTorch versions.
 conda install pytorch==2.4.1 torchvision==0.19.1 torchaudio==2.4.1 pytorch-cuda=11.8 -c pytorch -c nvidia
 
-# install requirements for VcEdit
+# core dependencies for VcEdit
 pip install -r requirements.txt
+
+#############################
+# 2. Environment: GaussianHairEdit
+#############################
+conda create -n GaussianHairEdit python=3.8 -y
+conda activate GaussianHairEdit
+
+# dependencies specific to GaussianHairEdit
+pip install -r requirements_GaussianHairEdit.txt
+
+#############################
+# 3. Environment: Gaussian3d
+#############################
+conda create -n Gaussian3d python=3.8 -y
+conda activate Gaussian3d
+
+# dependencies for 3D Gaussian / vanilla GS part
+pip install -r requirements_Gaussian3d.txt
+
+# (Optional) For vanilla Gaussian Splatting implementation, you can still
+# follow the official repo setup inside this Gaussian3d environment:
+#   https://github.com/graphdeco-inria/gaussian-splatting.git
 ```
 
-In addition, you need a separate environment for the *vanilla Gaussian Splatting* code:
-
-```bash
-# clone the official Gaussian Splatting repository
-git clone https://github.com/graphdeco-inria/gaussian-splatting.git
-
-# build environment for vanilla Gaussian Splatting
-# (same dependencies as in the official repo, just using this env name)
-conda create -n vanilla_gaussian_splatting python=3.8 -y
-conda activate vanilla_gaussian_splatting
-
-# now follow the installation steps from the official gaussian-splatting repo
-# to install all required packages inside this environment.
-```
-```
-
-<br/>
-
-```markdown
 ## Example Data
 
 To use your own monocular video as input, follow these steps:
 
-1. Create a new folder under `VcEdit/gs_data` named with your scene ID, e.g. `VcEdit/gs_data/$id`.
+1. Create a new folder under `GaussianHairEdit/gs_data` named with your scene ID, e.g. `GaussianHairEdit/gs_data/$id`.
 2. Place your monocular input video in this folder and rename it to `raw.mp4`, so the final path is:
    ```text
-   VcEdit/gs_data/$id/raw.mp4
+   GaussianHairEdit/gs_data/$id/raw.mp4
    ```
 3. From the project root, run:
    ```bash
@@ -69,25 +70,70 @@ To use your own monocular video as input, follow these steps:
    - perform a vanilla Gaussian Splatting reconstruction.
 
 After this, the preprocessed data and reconstructed Gaussian scene will be available under `gs_data/$id` for further editing.
+
+````markdown
+## Start Editing
+
+We provide five end-to-end pipelines corresponding to the setups described in our paper. Each pipeline is wrapped in a shell script under `script/`. All scripts assume you have:
+
+- Installed the three environments (`vcedit`, `GaussianHairEdit`, `Gaussian3d`) as described in **Installation**.
+- Prepared your scene folder under `gs_data/$id` and run `script/preprocess.sh` on your monocular video (see **Example Data**).
+
+### Pipeline overview and scripts
+
+- **Pipeline 1 – Modified VCEdit (hair-only editing, no face swap)**  
+  **Script:** `script/pipeline1_vcedit_without_faceswap.sh`  
+  Uses a VCEdit-style view-consistent 3DGS pipeline with explicit hair/foreground masks. Good for testing basic view-consistent hair editing; may still suffer from semantic leakage and over-smoothing in the face region.
+
+- **Pipeline 2 – VCEdit + Face Swap / Compositing (identity preservation)**  
+  **Script:** `script/pipeline2_vcedit_with_faceswap.sh`  
+  Extends Pipeline 1 with a post-processing face-swap/compositing stage that restores the original face on top of the edited hair, improving identity preservation but potentially introducing boundary artifacts along the hairline.
+
+- **Pipeline 3 – Stable-Hair (2D hair transfer baseline)**  
+  **Script:** `script/pipeline3_stable_hair.sh`  
+  Uses Stable-Hair as a 2D hair-transfer model to edit each frame given a reference hairstyle. This mainly changes texture/color while largely preserving the original hair geometry, and is included as a 2D baseline / ablation.
+
+- **Pipeline 4 – LMM-Guided Vanilla 3DGS (Gemini + standard Gaussians)**  
+  **Script:** `script/pipeline4_llmguided_vanilla_gaussian.sh`  
+  Edits frames independently using a multimodal LLM (e.g., Gemini 2.5 Flash), registers the edited frames back to the original cameras, and reconstructs with vanilla 3D Gaussian Splatting. Demonstrates typical “hollow face” / transparency issues without depth-regularized reconstruction.
+
+- **Pipeline 5 – LMM-Guided SparseGS + Deformable Warp (Final / Recommended)**  
+  **Script:** `script/pipeline5_llmguided_sparseGS_warp.sh`  
+  Our final geometry-aware pipeline. Combines HyperIQA-filtered frames, LMM-guided 2D edits, SparseGS with depth priors, and a learnable warping module to remove letterbox artifacts and produce solid, photorealistic geometry. This is the pipeline we recommend for practical use.
+
+### How to run the pipelines
+
+From the project root, after preprocessing your video:
+
+```bash
+# Pipeline 1: Modified VCEdit (no face swap)
+conda activate vcedit
+bash script/pipeline1_vcedit_without_faceswap.sh
+
+# Pipeline 2: VCEdit + post-process face swap
+conda activate vcedit
+bash script/pipeline2_vcedit_with_faceswap.sh
+
+# Pipeline 3: Stable-Hair 2D baseline
+conda activate GaussianHairEdit
+bash script/pipeline3_stable_hair.sh
+
+# Pipeline 4: LMM-guided editing + vanilla 3DGS
+conda activate Gaussian3d
+bash script/pipeline4_llmguided_vanilla_gaussian.sh
+
+# Pipeline 5: LMM-guided editing + SparseGS with deformable camera refinement (recommended)
+conda activate Gaussian3d
+bash script/pipeline5_llmguided_sparseGS_warp.sh
+````
+
+Each script can be customized (e.g., scene ID, paths, prompt, number of iterations) by editing the corresponding `script/pipeline*.sh` file. For deeper technical details, limitations, and comparisons between these pipelines, please refer to the accompanying paper.
+
 ```
 
-<br/>
+The brief descriptions of Pipelines 1–5 above follow the definitions and analysis in your report on hairstyle modification with 3D Gaussians. :contentReference[oaicite:0]{index=0}
+```
 
-## Start Editing
-We provide several sample scripts for running the editing process. For example:
-
-`bash script/man_clown.sh`
-
-The editing process typically takes 10 to 25 minutes on a single A100 GPU, depending on the scene size and the number of iterations. The GPU memory usage ranges between 20GB and 40GB. For panorama samples the memory cost for processing all views (which is unnecessary w.r.t. the performance) is a bit higher than 40GB, you can remove some views in the dataset.
-
-<!-- Note that our editing is based on the image editing achieved by [InfEdit](https://github.com/sled-group/InfEdit/tree/main). Due to the diversity of editing scenarios, not all the prompt generates satisfying results. For example, some prompts lead to editing failure or drastic multi-view inconsistency in InfEdit. Please first try image editing using your prompt in [InfEdit](https://github.com/sled-group/InfEdit/tree/main) for prompt availability and satisfying hyper-parameters. -->
-
-Our editing framework builds upon the image editing capabilities provided by [InfEdit](https://github.com/sled-group/InfEdit/tree/main). Due to the diverse nature of editing scenarios, not all prompts yield satisfying results. Some prompts may result in editing failures or too drastic multi-view inconsistencies when using InfEdit.
-Before using this framework, we recommend testing your prompts in [InfEdit](https://github.com/sled-group/InfEdit/tree/main) to ensure:
-
-* Prompt compatibility with the editing process.
-* Optimal hyper-parameter selection for achieving desired results.
-<br/>
 
 ## Citation
 

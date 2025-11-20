@@ -57,18 +57,7 @@ CUDA_VISIBLE_DEVICES="$GPU" python src/filter_scene_with_double_clip.py clip_fil
   --negative_prompt "$negative_prompt" \
   --threshold $CLIP_THRESHOLD
 
-cd "$PROJECT_DIR/SparseGS"
-conda deactivate && conda activate instantsplat
-CUDA_VISIBLE_DEVICES="$GPU" python prepare_gt_depth.py \
-  "$CLIP_SCENE_DIR/images" \
-  "$CLIP_SCENE_DIR/depths"
-
-cd "$PROJECT_DIR/SparseGS"
-conda deactivate && conda activate instantsplat
-CUDA_VISIBLE_DEVICES="$GPU" python train.py --source_path "$CLIP_SCENE_DIR" \
-  --model_path "$CLIP_SCENE_DIR/SparseGS" \
-  --beta 5.0 --lambda_pearson 0.05 \
-  --lambda_local_pearson 0.15 --box_p 128 --p_corr 0.5 \
-  --lambda_diffusion 0.001 --SDS_freq 0.1 --step_ratio 0.99 \
-  --lambda_reg 0.1 --prune_sched 20000 --prune_perc 0.98 --prune_exp 7.5 \
-  --iterations 30000 --checkpoint_iterations 30000 -r 2
+cd "$PROJECT_DIR"
+conda deactivate && conda activate vanilla_gaussian_splatting
+CUDA_VISIBLE_DEVICES="$GPU" python gaussian-splatting/train.py -s $DATA_PATH \
+      --model_path $DATA_PATH/3d_gaussian_splatting --port 1007$GPU

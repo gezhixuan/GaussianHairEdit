@@ -54,6 +54,7 @@ class LossGuard:
 
     def should_skip(self, loss_value: float) -> bool:
         """Return True if this loss should be skipped (too large)."""
+        return False
         v = float(loss_value)
 
         # Until we have enough samples, just record and never skip
@@ -672,6 +673,11 @@ def training(dataset, opt, pipe, testing_iterations, saving_iterations,
                     #         opt.densify_grad_threshold, 0.3,
                     #         scene.cameras_extent, size_threshold
                     #     )
+                    if iteration > 2e4:
+                        gaussians.densify_and_prune(
+                            opt.densify_grad_threshold, 0.05,
+                            scene.cameras_extent, size_threshold
+                        )                        
 
                 if iteration % opt.opacity_reset_interval == 0 or \
                         (dataset.white_background and iteration == opt.densify_from_iter):
@@ -695,6 +701,10 @@ def training(dataset, opt, pipe, testing_iterations, saving_iterations,
                     for pg in warp_optimizer.param_groups:
                         pg["lr"] *= 0.03   # make each LR 1/10 of its previous value
                 warp_lr_scaled = True
+            else:
+                if iteration%10000 == 9999:
+                    pg["lr"] *= 0.3   # make each LR 1/10 of its previous value
+
 
 
             # Optimizer steps

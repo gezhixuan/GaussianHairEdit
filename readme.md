@@ -1,23 +1,21 @@
-# [ECCV 2024] View-consistent 3D Editing with Gaussian Splatting
+# Hairstyle Modifaction using 3D gaussians
 
-<a href='https://vcedit.github.io'><img src='https://img.shields.io/badge/Project-Page-blue'></a>
-<a href='https://arxiv.org/abs/2403.11868'><img src='https://img.shields.io/badge/arXiv-2403.11868-b31b1b.svg'></a>  
+<!-- <a href='https://vcedit.github.io'><img src='https://img.shields.io/badge/Project-Page-blue'></a>
+<a href='https://arxiv.org/abs/2403.11868'><img src='https://img.shields.io/badge/arXiv-2403.11868-b31b1b.svg'></a>   -->
 
-Yuxuan Wang, Xuanyu Yi, Zike Wu, Na Zhao, Long Chen, Hanwang Zhang
+Zhixuan Ge, Liza Jivnani
 
-Nanyang Technological University,
-Hong Kong University of Science and Technology,
-Singapore University of Technology and Design,
-Skywork AI
+<p align="center" >
+  <img src="figures/3dgs_vs_buzzcut.gif" alt="Ground Truth" width="100%" />
+</p>
 
-![image](https://github.com/Yuxuan-W/VcEdit/blob/main/figures/teasor.png)
 
 <br/>
 
 ## Installation
 ```
 # clone this repository
-git clone https://github.com/Yuxuan-W/VcEdit.git
+git clone https://github.com/gezhixuan/GaussianHairEdit.git
 cd VcEdit
 
 # build environment
